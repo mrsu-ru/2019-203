@@ -1,9 +1,9 @@
-﻿#include "makarovayu.h"
+﻿#include "zhalninrv.h"
 
 /**
  * Введение в дисциплину
  */
-void makarovayu::lab1()
+void zhalninrv::lab1()
 {
 
 }
@@ -12,7 +12,7 @@ void makarovayu::lab1()
 /**
  * Метод Гаусса с выбором главного элемента
  */
-void makarovayu::lab2()
+void zhalninrv::lab2()
 {
 
 }
@@ -22,7 +22,7 @@ void makarovayu::lab2()
 /**
  * Метод прогонки
  */
-void makarovayu::lab3()
+void zhalninrv::lab3()
 {
 
 }
@@ -32,7 +32,7 @@ void makarovayu::lab3()
 /**
  * Метод простых итераций
  */
-void makarovayu::lab4()
+void zhalninrv::lab4()
 {
 
 }
@@ -42,7 +42,7 @@ void makarovayu::lab4()
 /**
  * Метод Якоби или Зейделя
  */
-void makarovayu::lab5()
+void zhalninrv::lab5()
 {
 
 }
@@ -52,7 +52,7 @@ void makarovayu::lab5()
 /**
  * Метод минимальных невязок
  */
-void makarovayu::lab6()
+void zhalninrv::lab6()
 {
 
 }
@@ -62,25 +62,25 @@ void makarovayu::lab6()
 /**
  * Метод сопряженных градиентов
  */
-void makarovayu::lab7()
+void zhalninrv::lab7()
 {
 
 }
 
 
-void makarovayu::lab8()
+void zhalninrv::lab8()
 {
 
 }
 
 
-void makarovayu::lab9()
+void zhalninrv::lab9()
 {
 
 }
 
 
-std::string makarovayu::get_name()
+std::string zhalninrv::get_name()
 {
-  return "????????";
+  return "Zhalnin R.V.";
 }

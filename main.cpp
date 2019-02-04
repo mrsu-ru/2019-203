@@ -13,7 +13,7 @@
 #include "kemaykinais.h"
 #include "kiselevis.h"
 #include "kobyzevkv.h"
-#include "makarovayu.h"
+#include "makarovaaa.h"
 #include "malovava.h"
 #include "maslovma.h"
 #include "medvedevama.h"
@@ -26,7 +26,7 @@
 #include "tereshkinki.h"
 #include "tokarevaaa.h"
 #include "shmelevaov.h"
-
+#include "zhalninrv.h"
 
 
 void print_usage(char* name);
@@ -73,8 +73,8 @@ int main(int argc, char** argv)
   else if (strcmp(argv[1],"kobyzevkv")==0) {
     l = new kobyzevkv();
   }
-  else  if (strcmp(argv[1], "makarovayu") == 0) {
-    l = new makarovayu();
+  else  if (strcmp(argv[1], "makarovaaa") == 0) {
+    l = new makarovaaa();
   }
   else  if (strcmp(argv[1], "malovava") == 0) {
     l = new malovava();
@@ -111,6 +111,9 @@ int main(int argc, char** argv)
   }
   else  if (strcmp(argv[1], "shmelevaov") == 0) {
     l = new shmelevaov();
+  }
+  else  if (strcmp(argv[1], "zhalninrv") == 0) {
+    l = new zhalninrv();
   }
   else  {
     print_usage(argv[0]);

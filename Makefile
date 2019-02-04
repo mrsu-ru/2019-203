@@ -14,7 +14,7 @@ SOURCES= \
     kemaykinais.cpp\
     kiselevis.cpp\
     kobyzevkv.cpp\
-    makarovayu.cpp\
+    makarovaaa.cpp\
     malovava.cpp\
     maslovma.cpp\
     medvedevama.cpp \
@@ -26,7 +26,8 @@ SOURCES= \
     tenishevir.cpp \
     tereshkinki.cpp \
     tokarevaaa.cpp \
-    shmelevaov.cpp \
+		shmelevaov.cpp \
+		zhalninrv.cpp \
 	lab.cpp
 
 OBJECTS=$(SOURCES:.cpp=.o)
