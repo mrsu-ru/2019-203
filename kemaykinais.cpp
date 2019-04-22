@@ -208,19 +208,90 @@ void kemaykinais::lab6()
  */
 void kemaykinais::lab7()
 {
-
+    double alpha, beta, temp, err, eps=pow(10, -10);
+    double sum1, sum2, Ax;
+    double r0[N], z0[N], Az[N];
+    for (int i=0; i<N; i++){
+        Ax=0;
+        for (int j=0; j<N; j++){
+            Ax+=A[i][j]*x[j];
+        }
+        r0[i]=b[i]-Ax;
+        z0[i]=r0[i];
+    }
+    do{
+        for (int i=0; i<N; i++){
+            Az[i]=0;
+            for (int j=0; j<N; j++){
+                Az[i]+=A[i][j]*z0[j];
+            }
+        }
+        sum1=0; sum2=0;
+        for (int i=0; i<N; i++){
+            sum1+=r0[i]*r0[i];
+            sum2+=Az[i]*z0[i];
+        }
+        alpha=sum1/sum2;
+        err=0;
+        for (int i=0; i<N; i++){
+            temp = x[i];
+            x[i]=x[i]+alpha*z0[i];
+            if (abs(temp-x[i]) > err) err = abs(temp-x[i]);
+        }
+        sum1=0; sum2=0;
+        for (int i=0; i<N; i++){
+            sum2+=r0[i]*r0[i];
+            r0[i]=r0[i]-alpha*Az[i];
+            sum1+=r0[i]*r0[i];
+        }
+        beta=sum1/sum2;
+        for (int i=0; i<N; i++){
+            z0[i]=r0[i]+beta*z0[i];
+        }
+    }while(err>eps);
 }
 
 
+
+/**
+* Метод вращения для нахождения собственных значений матрицы
+*/
 void kemaykinais::lab8()
 {
 
 }
 
 
+
+/**
+* Нахождение наибольшего по модулю собственного значения матрицы
+*/
 void kemaykinais::lab9()
 {
-
+    double eps=pow(10,-10), lambda=0, newlambda=0, y[N], mody;
+    x[0]=1;
+    do{
+        for (int i=0; i<N; i++){
+            y[i]=0;
+            for (int j=0; j<N; j++){
+                y[i]+=A[i][j]*x[j];
+            }
+        }
+        lambda=newlambda;
+        newlambda=0;
+        for (int i=0; i<N; i++){
+            newlambda+=y[i]*x[i];
+        }
+        mody=0;
+        for (int i=0; i<N; i++){
+            mody+=pow(y[i], 2);
+        }
+        mody=sqrt(mody);
+        for (int i=0; i<N; i++){
+            x[i]=y[i]/mody;
+        }
+    }while (abs(lambda-newlambda)>eps);
+    x[0]=newlambda;
 }
 
 

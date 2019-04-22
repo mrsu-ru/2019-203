@@ -165,6 +165,64 @@ delete [] oldx;
  */
 void rusaevon::lab6()
 {
+double Eps = 1e-18;
+	double Del, Res, Abs;
+
+	double *K = new double[N];
+	double *L = new double[N];
+	double *xrez = new double[N];
+	
+	
+	
+	for (int i = 0; i<N; i++)
+		xrez[i] = 0;
+
+	
+	do{
+		
+		for (int i = 0; i < N; i++) {
+			K[i] = 0;
+			for (int j = 0; j < N; j++)
+				K[i] += A[i][j] * xrez[j];
+		}
+
+		
+		for (int i = 0; i < N; i++) {
+			L[i] = K[i] - b[i];
+		}
+
+		
+		for (int i = 0; i < N; i++) {
+			K[i] = 0;
+			for (int j = 0; j < N; j++)
+				K[i] += A[i][j] * L[j];
+		}
+
+		Res = 0;
+		Abs = 0;
+		
+	
+		for (int i = 0; i < N; i++) {
+			Res += K[i] * L[i];
+			Abs += K[i] * K[i];
+		}
+		
+		if (Res==Abs) Res=1;
+		else {
+		Res = Res / Abs;
+		}
+		
+		for (int i = 0; i < N; i++)
+			x[i] = xrez[i] - Res*L[i];
+		
+		
+		Del = abs(x[0] - xrez[0]);
+		for (int i = 0; i < N; i++) {
+			if (abs(x[i] - xrez[i])>Del)
+				Del = abs(x[i] - xrez[i]);
+			xrez[i] = x[i];
+		}
+	} while (Eps < Del);
 
 }
 
@@ -175,7 +233,75 @@ void rusaevon::lab6()
  */
 void rusaevon::lab7()
 {
+double Eps = 1e-20;
+	double Del, s, sAbs;
 
+
+	double *K = new double[N];
+	double *L = new double[N];
+	double *M = new double[N];
+	double *xrez = new double[N];
+	
+	
+	
+	for (int i = 0; i<N; i++){
+		xrez[i] = 0;
+	}
+	
+	
+	do {
+		
+		for (int i = 0; i < N; i++) {
+			K[i] = 0;
+			for (int j = 0; j < N; j++)
+				K[i] += A[i][j] * xrez[j];
+		}
+		
+		
+		for (int i = 0; i < N; i++) {
+			L[i] = K[i] - b[i];
+		}
+		
+		
+		for (int i = 0; i < N; i++) {
+			K[i] = 0;
+			for (int j = 0; j < N; j++)
+				K[i] += A[i][j] * L[j];
+		}
+		
+		
+		for (int i = 0; i < N; i++) {
+			M[i] = 0;
+			for (int j = 0; j < N; j++) {
+				M[i] += A[i][j] * K[j];
+			}
+		}
+		
+		s = 0;
+		sAbs = 0;
+		
+		
+		for (int i = 0; i < N; i++) {
+			s += K[i] * L[i];
+			sAbs += M[i] * K[i];
+		}
+		if (s == sAbs)
+			s = 1;
+		else 
+			s = s / sAbs;
+		
+		for (int i = 0; i < N; i++)
+			x[i] = xrez[i] - s*L[i];
+		
+		
+		Del = abs(x[0] - xrez[0]);
+		
+		for (int i = 0; i < N; i++) {
+			if (abs(x[i] - xrez[i])>Del)
+				Del = abs(x[i] - xrez[i]);
+				xrez[i] = x[i];
+		}
+	} while (Eps < Del);
 }
 
 
