@@ -97,7 +97,46 @@ x[i] = alfa[i] * x[i + 1] + beta[i];
  */
 void epifanovats::lab4()
 {
+// Начальное приближение
+	for (int i = 0; i < N; i++) {
+		x[i] = 0.;
+	}
 
+	// Итерационный параметр
+	const double tau = 0.01;
+
+	// Вектор решений на предыдущей итерации
+	double *prev_x = new double[N];
+
+	double norma = 0.;
+	do {
+		// Запишем передыдущий вектор
+		for (int i = 0; i < N; i++) {
+			prev_x[i] = x[i];
+		}
+
+		// Найдем новый вектор решений на текущей итерации
+		for (int i = 0; i < N; i++) {
+			// Подставим текущее решение
+			double result = b[i];
+			for (int j = 0; j < N; j++) {
+				result -= (A[i][j] * prev_x[j]);
+			}
+
+			// Приближаем вектор решение к ответу
+			x[i] += (tau * result);
+		}
+
+		// Находим погрешность
+		norma = 0.;
+		for (int i = 0; i < N; i++) {
+			if (std::abs(prev_x[i] - x[i]) > norma) {
+				norma = std::abs(prev_x[i] - x[i]);
+			}
+		}
+	} while (norma > eps);
+
+	delete[] prev_x;
 }
 
 
