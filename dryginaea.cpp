@@ -275,64 +275,59 @@ void dryginaea::lab5()
  */
 void dryginaea::lab6()
 {
-	double *x_predv = new double[N];
-	double *delta = new double[N];
-	double tau;
-	
-    for (int i = 0; i < N; i++)
+	double *gapX = new double[N];
+	for (int i = 0; i < N; i++) 
 	{
-		x[i] = b[i];
+		gapX[i] = 0;
 	}
-
+	
+	double *delta = new double[N];
 	int k;
-
-	do
+	double tau;
+	double *tau_matrix = new double[N];
+	
+	while(true)
 	{
-		for (int i = 0; i < N; i++)
-		{
-			x_predv[i] = x[i];
-		}
-
-		Multi(A, x_predv, delta, N);
-
-		for (int i = 0; i < N; i++)
+		Multi(A, gapX, delta, N);
+		
+		for (int i = 0; i < N; i++) 
 		{
 			delta[i] = b[i] - delta[i];
 		}
 
-		double numerator_tau = 0;
-		double denominator_tau = 0;
-
-		for (int i = 0; i < N; i++)
-		{
-			double Ar = 0.0; 
-
-			for (int j = 0; j < N; j++)
-			{
-				Ar += (A[i][j] * delta[j]);
-			}
-
-			numerator_tau += (Ar * delta[i]);
-			denominator_tau += (Ar * Ar);
-		}
+		Multi(A, delta, tau_matrix, N);
 		
-		tau = numerator_tau / denominator_tau;
-
-		for (int i = 0; i < N; i++)
+		double top_tau = 0;
+		double bottom_tau = 0;
+		for (int i = 0; i < N; i++) 
 		{
-			x[i] = x_predv[i] - tau * delta[i];
+			top_tau += (tau_matrix[i] * delta[i]);
+			bottom_tau += (tau_matrix[i] * tau_matrix[i]);
+		}
+		tau = top_tau / bottom_tau;
+
+		for (int i = 0; i < N; i++) 
+		{
+			x[i] = gapX[i] + tau * delta[i];
 		}
 
 		k = 0;
-
-		for (int i = 0; i < N; i++)
+		
+		for (int i = 0; i < N; i++) 
 		{
-			if (fabs(x[i] - x_predv[i]) < eps)
+			if (fabs(x[i] - gapX[i]) < eps) 
 			{
 				k++;
 			}
 		}
-	} while (k < N - 1);
+		
+		if (k == N) break;
+
+		for (int i = 0; i < N; i++) 
+		{
+			gapX[i] = x[i];
+		}
+	} 
 }
 
 
