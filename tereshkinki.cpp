@@ -81,7 +81,7 @@ void tereshkinki::lab3()
  */
 void tereshkinki::lab4()
 {
-    double *new_x = new double[N], tau = 0.001, eps = 0.0000001;
+    double *new_x = new double[N], tau = 0.001, eps = 1.e-9;
     for (int i = 0; i < N; i++)
         x[i] = 0;
 
@@ -283,9 +283,10 @@ void tereshkinki::lab7()
 		Del = abs(x[0] - xrez[0]);
 		
 		for (int i = 0; i < N; i++) {
-			if (abs(x[i] - xrez[i])>Del)
+			if (abs(x[i] - xrez[i])>Del) {
 				Del = abs(x[i] - xrez[i]);
-				xrez[i] = x[i];
+            }
+			xrez[i] = x[i];
 		}
 	} while (Eps < Del);
 }
