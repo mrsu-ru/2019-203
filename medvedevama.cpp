@@ -3,12 +3,13 @@
 #include <cmath>
 #include <locale>
 
-double * Gauss(double **A, double *b, int N)
+void Gauss(double **A, double *b, int N, double *x)
 {
-  double *x, max;
+  double /* *x,*/ max;
   int k, index;
   const double eps = 0.00001;
-  x = new double[N]; double change[N]; int L;
+  //x = new double[N]; 
+  double change[N]; int L;
   k = 0;
   while (k < N)
   {
@@ -27,7 +28,7 @@ double * Gauss(double **A, double *b, int N)
     {
       cout << "Решение получить невозможно из-за нулевого столбца ";
       cout << index << " матрицы A" << endl;
-      return 0;
+      return;
     }
     for (int i = 0; i < N; i++)
     {
@@ -35,7 +36,7 @@ double * Gauss(double **A, double *b, int N)
     if(index!=i) {
 		swap(A[i],A[index]);
         swap(b[i],b[index]);
-		gity}
+		}
 
     for (int j = 0; j < N; j++)
     {
@@ -76,7 +77,7 @@ double * Gauss(double **A, double *b, int N)
             swap(b[L], b[i]);
 			}
 	}
-  return x;
+  //return x;
 }
 }
 
@@ -95,9 +96,7 @@ cout<<"Hello, World!"<<endl;
  */
 void medvedevama::lab2()
 {
- system("chcp 1251");
-  system("cls");
-  x = Gauss(A, b, N);
+  Gauss(A, b, N, x);
   }
 
 
