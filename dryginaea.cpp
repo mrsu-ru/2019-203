@@ -337,7 +337,64 @@ void dryginaea::lab6()
  */
 void dryginaea::lab7()
 {
-
+    double r[N], gapX[N], z[N], Ar[N];
+	int k;
+	
+	for (int i = 0; i < N; i++) 
+	{
+		gapX[i] = 0;
+	}
+	
+	while(true)
+	{
+		Multi(A, gapX, r, N);
+		
+		for (int i = 0; i < N; i++) 
+	    {
+		    r[i] = b[i] - r[i];
+			z[i] = r[i];
+	    }
+		
+		double alfa_top = 0, alfa_bottom = 0;
+		Multi(A, z, Ar, N);
+		
+		for (int i = 0; i < N; i++) 
+	    {
+		    alfa_top += r[i] * r[i];
+			alfa_bottom += Ar[i] * z[i];
+	    }
+		
+		double alfa = alfa_top / alfa_bottom;
+		double betta_top = 0, betta_bottom = 0;
+		
+		for (int i = 0; i < N; i++) 
+	    {
+		    x[i] = gapX[i] + alfa * z[i];
+			betta_bottom += r[i] * r[i];
+			r[i] = r[i] - alfa * Ar[i];
+			betta_top += r[i] * r[i];
+	    }
+		
+		double betta = betta_top / betta_bottom;
+		
+		for (int i = 0; i < N; i++) 
+	    {
+			z[i] = r[i] + betta * z[i];
+			gapX[i] = x[i];
+		}
+		
+		k = 0;
+		
+		for (int i = 0; i < N; i++) 
+		{
+			if (fabs(x[i] - gapX[i]) < eps) 
+			{
+				k++;
+			}
+		}
+		
+		if (k == N) break;
+	}	
 }
 
 
