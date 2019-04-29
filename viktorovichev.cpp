@@ -127,19 +127,21 @@ void viktorovichev::lab5()
 //Метод Якоби
 double *prevX = new double[N];
 
-for (int i=0; i<N; i++) {
+for (int i=0; i<N; i++)
+{
 x[i] = 0; // первоначальное новое решение
 }
-double eps = 1e-20;
+double eps = 1e-13;
 double eact = 0.0; //погрешность
 int k = 0;
 
-do {
+do  {
 k++;
 eact = 0.0;
 for(int i=0; i<N; i++)
 prevX[i]=x[i]; //записываем предыдущее решение
 for(int i=0; i<N; i++)
+
 {
 double s = 0; //вычисляем s, но мы не берём диагональные элементы
 for(int j=0; j<i; j++)
@@ -148,13 +150,15 @@ for(int j=i+1; j<N; j++)
 s += A[i][j] * prevX[j];
 x[i]=(b[i] - s)/A[i][i]; //находим новое решение
 }
+
 eact = abs(prevX[0]-x[0]);
 for(int i=0; i<N; i++)
 {
 if(abs(prevX[i]-x[i]) > eact )
 eact  = abs(prevX[i]-x[i]);//Вычисление погрешности текущего приближения (разница между предыдущим и текущим решением)
 }
-}
+
+    }
 while(eact  >= eps);
 delete [] prevX;
 }
