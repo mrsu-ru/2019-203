@@ -195,11 +195,7 @@ void dryginaea::lab4()
 				k++;
 			}
 		}
-		if (k == N) break;
-
-		++step;
 	}
-	std::cout << step << std::endl;
 }
 
 
@@ -209,63 +205,36 @@ void dryginaea::lab4()
  */
 void dryginaea::lab5()
 {
-	double **gapA = new double*[N];
-	for (int i = 0; i < N; i++)
+    double *gapX = new double[N];
+	int k = 0;
+	
+    for (int i = 0; i < N; i++)
 	{
-		gapA[i] = new double[N];
+        x[i] = 0;
 	}
 
-	double *gapB = new double[N];
-	double *gapX = new double[N];
+    do
+    {
+        for (int i = 0; i < N; i++)
+        {
+            gapX[i] = b[i];
+            for (int j = 0; j < N; j++)
+            {
+                if (i == j) continue;
+                gapX[i] -= A[i][j]*x[j];
+            }
 
-	for (int i = 0; i < N; i++)
-	{
-		gapA[i][i] = 0;
-
-		for (int j = 0; j < i; j++)
-		{
-			gapA[i][j] = A[i][j] / (-A[i][i]);
-		}
-
-		for (int j = i + 1; j < N; j++)
-		{
-			gapA[i][j] = A[i][j] / (-A[i][i]);
-		}
-
-		gapB[i] = b[i] / A[i][i];
-	}
-
-	for (int i = 0; i < N; i++)
-	{
-		x[i] = gapB[i];
-	}
-
-	while (true)
-	{
-		for (int i = 0; i < N; i++)
-		{
-			gapX[i] = x[i];
-		}
-
-		Multi(gapA, gapX, x, N);
-
-		for (int i = 0; i < N; i++)
-		{
-			x[i] = x[i] + gapB[i];
-		}
-
-		int k = 0;
-
-		for (int i = 0; i < N; i++)
-		{
-			if (fabs(x[i] - gapX[i]) < eps)
+            gapX[i] /= A[i][i];
+			
+            if (fabs(gapX[i] - x[i]) < eps)
 			{
-				k++;
+			    k++;
 			}
-		}
+			
+            x[i] = gapX[i];
+        }
 
-		if (k == N) break;
-	}
+    }while(k < N);
 }
 
 
