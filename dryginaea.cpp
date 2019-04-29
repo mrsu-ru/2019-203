@@ -244,7 +244,59 @@ void dryginaea::lab5()
  */
 void dryginaea::lab6()
 {
+	double *gapX = new double[N];
+	for (int i = 0; i < N; i++) 
+	{
+		gapX[i] = 0;
+	}
+	
+	double *delta = new double[N];
+	int k;
+	double tau;
+	double *tau_matrix = new double[N];
+	
+	while(true)
+	{
+		Multi(A, gapX, delta, N);
+		
+		for (int i = 0; i < N; i++) 
+		{
+			delta[i] = b[i] - delta[i];
+		}
 
+		Multi(A, delta, tau_matrix, N);
+		
+		double top_tau = 0;
+		double bottom_tau = 0;
+		for (int i = 0; i < N; i++) 
+		{
+			top_tau += (tau_matrix[i] * delta[i]);
+			bottom_tau += (tau_matrix[i] * tau_matrix[i]);
+		}
+		tau = top_tau / bottom_tau;
+
+		for (int i = 0; i < N; i++) 
+		{
+			x[i] = gapX[i] + tau * delta[i];
+		}
+
+		k = 0;
+		
+		for (int i = 0; i < N; i++) 
+		{
+			if (fabs(x[i] - gapX[i]) < eps) 
+			{
+				k++;
+			}
+		}
+		
+		if (k == N) break;
+
+		for (int i = 0; i < N; i++) 
+		{
+			gapX[i] = x[i];
+		}
+	} 
 }
 
 
@@ -254,7 +306,64 @@ void dryginaea::lab6()
  */
 void dryginaea::lab7()
 {
-
+    double r[N], gapX[N], z[N], Ar[N];
+	int k;
+	
+	for (int i = 0; i < N; i++) 
+	{
+		gapX[i] = 0;
+	}
+	
+	while(true)
+	{
+		Multi(A, gapX, r, N);
+		
+		for (int i = 0; i < N; i++) 
+	    {
+		    r[i] = b[i] - r[i];
+			z[i] = r[i];
+	    }
+		
+		double alfa_top = 0, alfa_bottom = 0;
+		Multi(A, z, Ar, N);
+		
+		for (int i = 0; i < N; i++) 
+	    {
+		    alfa_top += r[i] * r[i];
+			alfa_bottom += Ar[i] * z[i];
+	    }
+		
+		double alfa = alfa_top / alfa_bottom;
+		double betta_top = 0, betta_bottom = 0;
+		
+		for (int i = 0; i < N; i++) 
+	    {
+		    x[i] = gapX[i] + alfa * z[i];
+			betta_bottom += r[i] * r[i];
+			r[i] = r[i] - alfa * Ar[i];
+			betta_top += r[i] * r[i];
+	    }
+		
+		double betta = betta_top / betta_bottom;
+		
+		for (int i = 0; i < N; i++) 
+	    {
+			z[i] = r[i] + betta * z[i];
+			gapX[i] = x[i];
+		}
+		
+		k = 0;
+		
+		for (int i = 0; i < N; i++) 
+		{
+			if (fabs(x[i] - gapX[i]) < eps) 
+			{
+				k++;
+			}
+		}
+		
+		if (k == N) break;
+	}	
 }
 
 
