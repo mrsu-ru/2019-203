@@ -171,7 +171,6 @@ void dryginaea::lab4()
 		x[i] = b[i];
 	}
 
-	int step = 0;
 	while (true)
 	{
 		for (int i = 0; i < N; i++)
@@ -375,7 +374,49 @@ void dryginaea::lab8()
 
 void dryginaea::lab9()
 {
+    double *newX = new double[N], l = 0;
+	
+    for (int i = 1; i < N; i++) 
+	{
+		x[i] = 0;
+	}
 
+    x[0] = 1;
+	
+    do
+    {
+        double new_l = 0;
+		
+        for (int i = 0; i < N; i++)
+        {
+            newX[i] = 0;
+
+            for (int j = 0; j < N; j++)
+                newX[i] += A[i][j] * x[j];
+
+            new_l += x[i] * newX[i];
+        }
+
+        if (fabs(new_l - l) < eps) break;
+
+        l = new_l;
+        double n = 0;
+		
+        for (int i = 0; i < N; i++) 
+		{
+			n += newX[i] * newX[i];
+		}
+
+        n = sqrt(n);
+		
+        for (int i = 0; i < N; i++) 
+		{
+			x[i] = newX[i] / n;
+		}
+
+    } while (true);
+
+    x[0] = l;
 }
 
 
