@@ -1,5 +1,5 @@
 ﻿#include "dryginaea.h"
-#define  eps 1.e-9
+#define  eps 0.001
 
 /**
  * Введение в дисциплину
@@ -365,10 +365,87 @@ void dryginaea::lab7()
 	}	
 }
 
-
 void dryginaea::lab8()
 {
+	double **gapA = new double *[N];
+	for (int i = 0; i < N; i++)
+	{
+		gapA[i] = new double[N];
+	}
 
+	double f;
+
+	double **H = new double *[N];
+	for (int i = 0; i < N; i++)
+	{
+		H[i] = new double[N];
+	}
+
+	for (int i = 0; i < N; i++)
+	{
+		for (int j = 0; j < N; j++)
+		{
+			gapA[i][j] = A[i][j];
+		}
+	}
+
+	while (true)
+	{
+		double a_max = 0;
+		int i_max = 0, j_max = 0;
+
+		for (int i = 0; i < N - 1; i++)
+		{
+			for (int j = i + 1; j < N; j++)
+			{
+				if (fabs(gapA[i][j]) > fabs(a_max))
+				{
+					a_max = gapA[i][j];
+					i_max = i;
+					j_max = j;
+				}
+			}
+		}
+
+		if (fabs(a_max) < eps) break;
+
+		f = 0.5 * atan((2 * a_max) / (gapA[i_max][i_max] - gapA[j_max][j_max]));
+
+		for (int i = 0; i < N; i++)
+        {
+            H[i][i_max] = gapA[i][i_max] * cos(f) + gapA[i][j_max] * sin(f);
+            H[i][j_max] = gapA[i][j_max] * cos(f) - gapA[i][i_max] * sin(f);
+        }
+
+        for (int i = 0; i < N; i++)
+            for (int j = 0; j < N; j++)
+			{
+                if (j != i_max && j != j_max) 
+				{
+					H[i][j] = gapA[i][j];
+				}
+			}
+
+        for (int j = 0; j < N; j++)
+        {
+            gapA[i_max][j] = H[i_max][j] * cos(f) + H[j_max][j] * sin(f);
+            gapA[j_max][j] = H[j_max][j] * cos(f) - H[i_max][j] * sin(f);
+        }
+
+        for (int i = 0; i < N; i++)
+            for (int j = 0; j < N; j++)
+			{
+                if (i != i_max && i != j_max) 
+				{
+					gapA[i][j] = H[i][j];
+				}
+			}
+	}
+
+	for (int i = 0; i < N; i++)
+	{
+		x[i] = gapA[i][i];
+	}
 }
 
 
