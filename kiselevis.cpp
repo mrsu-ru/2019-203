@@ -95,7 +95,7 @@ void kiselevis::lab3()
 	// Обратный ход
 	x[N - 1] = q[N - 1];
 	for (int i = N - 2; i >= 0; i--) {
-		x[i] = -p[i] * x[i + 1] + q[i];
+		x[i] = p[i] * x[i + 1] + q[i];
 	}
 
 	delete[] p;
