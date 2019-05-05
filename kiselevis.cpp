@@ -109,7 +109,34 @@ void kiselevis::lab3()
  */
 void kiselevis::lab4()
 {
+	double eps = 1e-20;
+	double tau = 1e-5;
 
+	double* prevX = new double[N];
+	
+	while (true) {
+
+		for (int i = 0; i < N; i++)
+			prevX[i] = x[i];
+
+		for (int i = 0; i < N; i++) {
+			double sum = 0;
+			for (int j = 0; j < N; j++) 
+				sum += A[i][j] * prevX[j];
+			x[i] = prevX[i] - tau * (sum - b[i]);
+		}
+
+		double maxErr = abs(x[0] - prevX[0]);
+		for (int i = 1; i < N; i++)
+			if (abs(x[i] - prevX[i]) > maxErr)
+				maxErr = abs(x[i] - prevX[i]);
+
+		if (maxErr < eps)
+			break;
+
+	}
+
+	delete[] prevX;
 }
 
 
