@@ -54,7 +54,26 @@ double p;
  */
 void eremkinnv::lab3()
 {
+	double* alpha = new double[N - 1];
+	double* gamma = new double[N];
 
+	for (int i = 0; i < N; i++) {
+
+		gamma[i] = A[i][i];
+		if (i != 0) gamma[i] += A[i][i - 1] * alpha[i - 1];
+
+		if (i != N - 1) alpha[i] = -A[i][i + 1] / gamma[i];
+
+		x[i] = b[i] / gamma[i];
+		if (i != 0) x[i] -= A[i][i - 1] * x[i - 1] / gamma[i];
+
+	}
+
+	for (int i = N - 2; i >= 0; i--)
+		x[i] += alpha[i] * x[i + 1];
+
+	delete[] alpha;
+	delete[] gamma;
 }
 
 
@@ -64,7 +83,39 @@ void eremkinnv::lab3()
  */
 void eremkinnv::lab4()
 {
+double Eps=1e-15;
+double Err;
+double *nx = new double[N];
 
+for (int i=0;i<N;i++)
+	x[i]=b[i];
+int step=0;
+
+do{
+step++;
+  for(int i=0;i < N;i++)
+  {
+   nx[i]=-b[i];
+
+   for(int j=0;j < N;j++)
+   {
+    if(i!=j)
+     nx[i]+=A[i][j]*x[j];
+   }
+
+   nx[i]/=-A[i][i];
+  }
+  Err=0;
+for(int i=0; i<N; i++) {
+if(std::abs(x[i]-nx[i]) > Err)
+Err = std::abs(x[i]-nx[i]);
+}
+for(int i=0; i<N; i++)
+	x[i]=nx[i];
+std::cout<<step<<"    "<<Err<<endl;
+}while (Err>Eps);
+
+delete[] nx;
 }
 
 
