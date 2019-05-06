@@ -90,6 +90,35 @@ void malovava::lab3()
  */
 void malovava::lab4()
 {
+double eps = 1e-15;
+	double tau = 1e-5;
+
+	double* prevX = new double[N];
+
+	while (true) {
+
+		for (int i = 0; i < N; i++)
+			prevX[i] = x[i];
+
+		for (int i = 0; i < N; i++) {
+			double sum = 0;
+			for (int j = 0; j < N; j++)
+				sum += A[i][j] * prevX[j];
+			x[i] = prevX[i] - tau * (sum - b[i]);
+		}
+
+		double maxErr = abs(x[0] - prevX[0]);
+		for (int i = 1; i < N; i++)
+			if (abs(x[i] - prevX[i]) > maxErr)
+				maxErr = abs(x[i] - prevX[i]);
+
+		if (maxErr < eps)
+			break;
+
+	}
+
+	delete[] prevX;
+
 
 }
 
@@ -99,8 +128,35 @@ void malovava::lab4()
  * Метод Якоби или Зейделя
  */
 void malovava::lab5()
-{
+{   double eps=1e-20;
+	for (int i = 0; i < N; i++) {
+		x[i] = 0;
+	}
+	double *prev_x = new double[N];
 
+	double norma = 0.0;
+	do {
+		for (int i = 0; i < N; i++) {
+			prev_x[i] = x[i];           //записываем предыдущее решение
+		}
+		for (int i = 0; i < N; i++) {   // найдем новое решение на текущей итерации
+			double result = b[i];
+			for (int j = 0; j < N; j++) {
+				if (i != j) {
+					result -= (A[i][j] * prev_x[j]);
+				}
+			}
+			x[i] = result / A[i][i];
+		}
+		norma = 0.0;    //найдем погрешность
+		for (int i = 0; i < N; i++) {
+			if (std::abs(prev_x[i] - x[i]) > norma) {
+				norma = std::abs(prev_x[i] - x[i]);   //максимальная разница между предыдущим решением и текущим
+			}
+		}
+	} while (norma > eps);
+
+	delete[] prev_x;
 }
 
 

@@ -172,7 +172,46 @@ void tokarevaaa::lab5()
  */
 void tokarevaaa::lab6()
 {
-
+    double eps = 1.e-14;
+    for (int i = 0; i < N; i++) {
+		x[i] = 0;
+	}
+	double *p_x = new double[N];
+	double *r = new double[N];
+	double norma = 0;
+	do {
+		for (int i = 0; i < N; i++) {
+			p_x[i] = x[i];
+		}
+		for (int i = 0; i < N; i++) {
+			r[i] = b[i];
+			for (int j = 0; j < N; j++) {
+				r[i] -= (A[i][j] * x[j]);
+			}
+		}
+		double tau = 0;
+		double div = 0;
+		for (int i = 0; i < N; i++) {
+			double Ar = 0;
+			for (int j = 0; j < N; j++) {
+				Ar += (A[i][j] * r[j]);
+			}
+			tau += (Ar * r[i]);
+			div += (Ar * Ar);
+		}
+		tau /= div;
+		for (int i = 0; i < N; i++) {
+			x[i] += (tau * r[i]);
+		}
+		norma = 0;
+		for (int i = 0; i < N; i++) {
+			if (abs(p_x[i] - x[i]) > norma) {
+				norma = abs(p_x[i] - x[i]);
+			}
+		}
+	} while (norma > eps);
+	delete[] p_x;
+	delete[] r;
 }
 
 

@@ -81,39 +81,32 @@ void tereshkinki::lab3()
  */
 void tereshkinki::lab4()
 {
-double Eps=1e-15;//порядок ошибки
-double Err;
-double *nx = new double[N];//для хранения промежуточных значений
+    double *new_x = new double[N], tau = 0.001, eps = 1.e-9;
+    for (int i = 0; i < N; i++)
+        x[i] = 0;
 
-for (int i=0;i<N;i++)//для первичного приближения возьмём столбец свободных членов
-	x[i]=b[i];
-int step=0;
-	
-do{
-step++;
-  for(int i=0;i < N;i++)
-  {
-   nx[i]=-b[i];
- 
-   for(int j=0;j < N;j++)
-   {
-    if(i!=j)
-     nx[i]+=A[i][j]*x[j];
-   }
- 
-   nx[i]/=-A[i][i];
-  }
-  Err=0;
-for(int i=0; i<N; i++) { 
-if(std::abs(x[i]-nx[i]) > Err)//Максимальная разница между элементами решения 
-Err = std::abs(x[i]-nx[i]);
-}
-for(int i=0; i<N; i++) 
-	x[i]=nx[i];
-std::cout<<step<<"    "<<Err<<endl;
-}while (Err>Eps);
+    do
+    {
+        for (int i = 0; i < N; i++)
+        {
+            double temp = 0;
+            for (int j = 0; j < N; j++)
+                temp += A[i][j] * x[j];
 
-delete[] nx;
+            new_x[i] = x[i] + tau * (b[i] - temp);
+        }
+
+        double maxdif = 0;
+        for (int i = 0; i < N; i++)
+        {
+            if (fabs(x[i] - new_x[i]) > maxdif) maxdif = fabs(x[i] - new_x[i]);
+            x[i] = new_x[i];
+        }
+
+        if (maxdif < eps) break;
+    }while(true);
+
+    delete[] new_x;
 }
 
 
@@ -123,39 +116,31 @@ delete[] nx;
  */
 void tereshkinki::lab5()
 {
-//Метод Якоби
-double *oldx = new double[N]; 
+    double *new_x = new double[N], eps = 0.0000001;
+    bool condition;
+    for (int i = 0; i < N; i++)
+        x[i] = 1;
 
-for (int i=0; i<N; i++) { 
-x[i]=0; // первоначальное новое решение 
-} 
+    do
+    {
+        condition = false;
+        for (int i = 0; i < N; i++)
+        {
+            new_x[i] = b[i];
+            for (int j = 0; j < N; j++)
+            {
+                if (i == j) continue;
+                new_x[i] -= A[i][j]*x[j];
+            }
 
-double Err=0.0; 
-double eps=1e-20; 
-int k=0; 
+            new_x[i] /= A[i][i];
+            if (!condition) condition = (fabs(new_x[i] - x[i]) > eps);
+            x[i] = new_x[i];
+        }
 
-do { 
-k++; 
-Err=0.0; 
-for(int i=0; i<N; i++) 
-oldx[i]=x[i]; // здесь записывается предыдущее решение 
-for(int i=0; i<N; i++) 
-{ 
-double s=0; //вычисляем s, но мы не берём диагональные элементы 
-for(int j=0; j<i; j++) 
-s += A[i][j] * oldx[j]; 
-for(int j=i+1; j<N; j++) 
-s += A[i][j] * oldx[j]; 
-x[i]=(b[i] - s)/A[i][i]; // вычисляется новое решение 
-} 
-Err= std::abs(oldx[0]-x[0]); 
-for(int i=0; i<N; i++) 
-{ 
-if(std::abs(oldx[i]-x[i]) > Err) 
-Err = std::abs(oldx[i]-x[i]);//максимальная разница между предыдущим решением и текущим. 
-} 
-} while(Err >= eps); 
-delete [] oldx; 
+    }while(condition);
+
+    delete[] new_x;
 }
 
 
@@ -165,7 +150,66 @@ delete [] oldx;
  */
 void tereshkinki::lab6()
 {
+	
+	double Eps = 1e-18;//погрешность
+	double Del, Res, Abs;//погрешность, невязка, модуль
 
+	double *K = new double[N];//w
+	double *L = new double[N];//v
+	double *xrez = new double[N];
+	
+	
+	//задаём первоначальное приближение
+	for (int i = 0; i<N; i++)
+		xrez[i] = 0;
+
+	//цикл для нахождения корней
+	do{
+		//находим редуцированную систему(одна часть)
+		for (int i = 0; i < N; i++) {
+			K[i] = 0;
+			for (int j = 0; j < N; j++)
+				K[i] += A[i][j] * xrez[j];
+		}
+
+		//находим редуцированную систему(вторая часть)
+		for (int i = 0; i < N; i++) {
+			L[i] = K[i] - b[i];//нахождение вектора невязки
+		}
+
+		
+		//нахождение скалярного произведения матрицы системы и вектора невязки
+		for (int i = 0; i < N; i++) {
+			K[i] = 0;
+			for (int j = 0; j < N; j++)
+				K[i] += A[i][j] * L[j];
+		}
+
+		Res = 0;
+		Abs = 0;
+		
+		//нахождение значения итерационного параметра
+		for (int i = 0; i < N; i++) {
+			Res += K[i] * L[i];
+			Abs += K[i] * K[i];
+		}
+		
+		if (Res==Abs) Res=1;
+		else {
+		Res = Res / Abs;
+		}
+		//получение приближения решения
+		for (int i = 0; i < N; i++)
+			x[i] = xrez[i] - Res*L[i];
+		
+		//Проверка на уменьшение погрешности
+		Del = abs(x[0] - xrez[0]);
+		for (int i = 0; i < N; i++) {
+			if (abs(x[i] - xrez[i])>Del)
+				Del = abs(x[i] - xrez[i]);
+			xrez[i] = x[i];
+		}
+	} while (Eps < Del);
 }
 
 
@@ -175,7 +219,76 @@ void tereshkinki::lab6()
  */
 void tereshkinki::lab7()
 {
+	double Eps = 1e-20;//заданная погрешность
+	double Del, s, sAbs;//погрешность итерации, скалярный шаг, модуль шага
 
+
+	double *K = new double[N];
+	double *L = new double[N];
+	double *M = new double[N];
+	double *xrez = new double[N];//итерационные решения
+	
+	
+	//задание начального приближения 
+	for (int i = 0; i<N; i++){
+		xrez[i] = 0;
+	}
+	
+	
+	do {
+		//нахождение скалярного произведения матрицы системы и вектора приближенного решения
+		for (int i = 0; i < N; i++) {
+			K[i] = 0;
+			for (int j = 0; j < N; j++)
+				K[i] += A[i][j] * xrez[j];
+		}
+		
+		//нахождение градиента
+		for (int i = 0; i < N; i++) {
+			L[i] = K[i] - b[i];
+		}
+		
+		//скалярное произведение матрицы системы и градиента
+		for (int i = 0; i < N; i++) {
+			K[i] = 0;
+			for (int j = 0; j < N; j++)
+				K[i] += A[i][j] * L[j];
+		}
+		
+		
+		for (int i = 0; i < N; i++) {
+			M[i] = 0;
+			for (int j = 0; j < N; j++) {
+				M[i] += A[i][j] * K[j];
+			}
+		}
+		
+		s = 0;
+		sAbs = 0;
+		
+		//нахождение величины смещения по направлению градиента(скалярного шага)
+		for (int i = 0; i < N; i++) {
+			s += K[i] * L[i];
+			sAbs += M[i] * K[i];
+		}
+		if (s == sAbs)
+			s = 1;
+		else 
+			s = s / sAbs;
+		//записываем новое приближенное решение
+		for (int i = 0; i < N; i++)
+			x[i] = xrez[i] - s*L[i];
+		
+		//проверка на уменьшение погрешности
+		Del = abs(x[0] - xrez[0]);
+		
+		for (int i = 0; i < N; i++) {
+			if (abs(x[i] - xrez[i])>Del) {
+				Del = abs(x[i] - xrez[i]);
+            }
+			xrez[i] = x[i];
+		}
+	} while (Eps < Del);
 }
 
 

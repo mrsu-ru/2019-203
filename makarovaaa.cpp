@@ -141,7 +141,32 @@ delete[] low;
  */
 void makarovaaa::lab4()
 {
+double *new_x = new double[N], tau = 0.001, eps = 1.e-9;
+    for (int i = 0; i < N; i++)
+        x[i] = 0;
 
+    do
+    {
+        for (int i = 0; i < N; i++)
+        {
+            double temp = 0;
+            for (int j = 0; j < N; j++)
+                temp += A[i][j] * x[j];
+
+            new_x[i] = x[i] + tau * (b[i] - temp);
+        }
+
+        double maxdif = 0;
+        for (int i = 0; i < N; i++)
+        {
+            if (fabs(x[i] - new_x[i]) > maxdif) maxdif = fabs(x[i] - new_x[i]);
+            x[i] = new_x[i];
+        }
+
+        if (maxdif < eps) break;
+    }while(true);
+
+    delete[] new_x;
 }
 
 
@@ -151,7 +176,39 @@ void makarovaaa::lab4()
  */
 void makarovaaa::lab5()
 {
+//Метод Зейделя
+double *oldx = new double[N]; 
 
+for (int i=0; i<N; i++) { 
+x[i]=0; 
+} 
+
+double Err=0.0; 
+double eps=1e-20; 
+int k=0; 
+
+do { 
+k++; 
+Err=0.0; 
+for(int i=0; i<N; i++) 
+oldx[i]=x[i]; 
+for(int i=0; i<N; i++) 
+{ 
+double s=0; 
+for(int j=0; j<i; j++) 
+s += A[i][j] * oldx[j]; 
+for(int j=i+1; j<N; j++) 
+s += A[i][j] * oldx[j]; 
+x[i]=(b[i] - s)/A[i][i]; 
+} 
+Err= abs(oldx[0]-x[0]); 
+for(int i=0; i<N; i++) 
+{ 
+if(abs(oldx[i]-x[i]) > Err) 
+Err = abs(oldx[i]-x[i]);//максимальная разница между предыдущим решением и текущим. 
+} 
+} while(Err >= eps); 
+delete [] oldx;
 }
 
 

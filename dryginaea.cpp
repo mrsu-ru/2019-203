@@ -1,5 +1,5 @@
 ﻿#include "dryginaea.h"
-#define  eps 1.e-9
+#define  eps 0.001
 
 /**
  * Введение в дисциплину
@@ -171,7 +171,6 @@ void dryginaea::lab4()
 		x[i] = b[i];
 	}
 
-	int step = 0;
 	while (true)
 	{
 		for (int i = 0; i < N; i++)
@@ -195,11 +194,7 @@ void dryginaea::lab4()
 				k++;
 			}
 		}
-		if (k == N) break;
-
-		++step;
 	}
-	std::cout << step << std::endl;
 }
 
 
@@ -209,63 +204,36 @@ void dryginaea::lab4()
  */
 void dryginaea::lab5()
 {
-	double **gapA = new double*[N];
-	for (int i = 0; i < N; i++)
+    double *gapX = new double[N];
+	int k = 0;
+	
+    for (int i = 0; i < N; i++)
 	{
-		gapA[i] = new double[N];
+        x[i] = 0;
 	}
 
-	double *gapB = new double[N];
-	double *gapX = new double[N];
+    do
+    {
+        for (int i = 0; i < N; i++)
+        {
+            gapX[i] = b[i];
+            for (int j = 0; j < N; j++)
+            {
+                if (i == j) continue;
+                gapX[i] -= A[i][j]*x[j];
+            }
 
-	for (int i = 0; i < N; i++)
-	{
-		gapA[i][i] = 0;
-
-		for (int j = 0; j < i; j++)
-		{
-			gapA[i][j] = A[i][j] / (-A[i][i]);
-		}
-
-		for (int j = i + 1; j < N; j++)
-		{
-			gapA[i][j] = A[i][j] / (-A[i][i]);
-		}
-
-		gapB[i] = b[i] / A[i][i];
-	}
-
-	for (int i = 0; i < N; i++)
-	{
-		x[i] = gapB[i];
-	}
-
-	while (true)
-	{
-		for (int i = 0; i < N; i++)
-		{
-			gapX[i] = x[i];
-		}
-
-		Multi(gapA, gapX, x, N);
-
-		for (int i = 0; i < N; i++)
-		{
-			x[i] = x[i] + gapB[i];
-		}
-
-		int k = 0;
-
-		for (int i = 0; i < N; i++)
-		{
-			if (fabs(x[i] - gapX[i]) < eps)
+            gapX[i] /= A[i][i];
+			
+            if (fabs(gapX[i] - x[i]) < eps)
 			{
-				k++;
+			    k++;
 			}
-		}
+			
+            x[i] = gapX[i];
+        }
 
-		if (k == N) break;
-	}
+    }while(k < N);
 }
 
 
@@ -275,7 +243,59 @@ void dryginaea::lab5()
  */
 void dryginaea::lab6()
 {
+	double *gapX = new double[N];
+	for (int i = 0; i < N; i++) 
+	{
+		gapX[i] = 0;
+	}
+	
+	double *delta = new double[N];
+	int k;
+	double tau;
+	double *tau_matrix = new double[N];
+	
+	while(true)
+	{
+		Multi(A, gapX, delta, N);
+		
+		for (int i = 0; i < N; i++) 
+		{
+			delta[i] = b[i] - delta[i];
+		}
 
+		Multi(A, delta, tau_matrix, N);
+		
+		double top_tau = 0;
+		double bottom_tau = 0;
+		for (int i = 0; i < N; i++) 
+		{
+			top_tau += (tau_matrix[i] * delta[i]);
+			bottom_tau += (tau_matrix[i] * tau_matrix[i]);
+		}
+		tau = top_tau / bottom_tau;
+
+		for (int i = 0; i < N; i++) 
+		{
+			x[i] = gapX[i] + tau * delta[i];
+		}
+
+		k = 0;
+		
+		for (int i = 0; i < N; i++) 
+		{
+			if (fabs(x[i] - gapX[i]) < eps) 
+			{
+				k++;
+			}
+		}
+		
+		if (k == N) break;
+
+		for (int i = 0; i < N; i++) 
+		{
+			gapX[i] = x[i];
+		}
+	} 
 }
 
 
@@ -285,19 +305,195 @@ void dryginaea::lab6()
  */
 void dryginaea::lab7()
 {
-
+    double r[N], gapX[N], z[N], Ar[N];
+	int k;
+	
+	for (int i = 0; i < N; i++) 
+	{
+		gapX[i] = 0;
+	}
+	
+	while(true)
+	{
+		Multi(A, gapX, r, N);
+		
+		for (int i = 0; i < N; i++) 
+	    {
+		    r[i] = b[i] - r[i];
+			z[i] = r[i];
+	    }
+		
+		double alfa_top = 0, alfa_bottom = 0;
+		Multi(A, z, Ar, N);
+		
+		for (int i = 0; i < N; i++) 
+	    {
+		    alfa_top += r[i] * r[i];
+			alfa_bottom += Ar[i] * z[i];
+	    }
+		
+		double alfa = alfa_top / alfa_bottom;
+		double betta_top = 0, betta_bottom = 0;
+		
+		for (int i = 0; i < N; i++) 
+	    {
+		    x[i] = gapX[i] + alfa * z[i];
+			betta_bottom += r[i] * r[i];
+			r[i] = r[i] - alfa * Ar[i];
+			betta_top += r[i] * r[i];
+	    }
+		
+		double betta = betta_top / betta_bottom;
+		
+		for (int i = 0; i < N; i++) 
+	    {
+			z[i] = r[i] + betta * z[i];
+			gapX[i] = x[i];
+		}
+		
+		k = 0;
+		
+		for (int i = 0; i < N; i++) 
+		{
+			if (fabs(x[i] - gapX[i]) < eps) 
+			{
+				k++;
+			}
+		}
+		
+		if (k == N) break;
+	}	
 }
-
 
 void dryginaea::lab8()
 {
+	double **gapA = new double *[N];
+	for (int i = 0; i < N; i++)
+	{
+		gapA[i] = new double[N];
+	}
 
+	double f;
+
+	double **H = new double *[N];
+	for (int i = 0; i < N; i++)
+	{
+		H[i] = new double[N];
+	}
+
+	for (int i = 0; i < N; i++)
+	{
+		for (int j = 0; j < N; j++)
+		{
+			gapA[i][j] = A[i][j];
+		}
+	}
+
+	while (true)
+	{
+		double a_max = 0;
+		int i_max = 0, j_max = 0;
+
+		for (int i = 0; i < N - 1; i++)
+		{
+			for (int j = i + 1; j < N; j++)
+			{
+				if (fabs(gapA[i][j]) > fabs(a_max))
+				{
+					a_max = gapA[i][j];
+					i_max = i;
+					j_max = j;
+				}
+			}
+		}
+
+		if (fabs(a_max) < eps) break;
+
+		f = 0.5 * atan((2 * a_max) / (gapA[i_max][i_max] - gapA[j_max][j_max]));
+
+		for (int i = 0; i < N; i++)
+        {
+            H[i][i_max] = gapA[i][i_max] * cos(f) + gapA[i][j_max] * sin(f);
+            H[i][j_max] = gapA[i][j_max] * cos(f) - gapA[i][i_max] * sin(f);
+        }
+
+        for (int i = 0; i < N; i++)
+            for (int j = 0; j < N; j++)
+			{
+                if (j != i_max && j != j_max) 
+				{
+					H[i][j] = gapA[i][j];
+				}
+			}
+
+        for (int j = 0; j < N; j++)
+        {
+            gapA[i_max][j] = H[i_max][j] * cos(f) + H[j_max][j] * sin(f);
+            gapA[j_max][j] = H[j_max][j] * cos(f) - H[i_max][j] * sin(f);
+        }
+
+        for (int i = 0; i < N; i++)
+            for (int j = 0; j < N; j++)
+			{
+                if (i != i_max && i != j_max) 
+				{
+					gapA[i][j] = H[i][j];
+				}
+			}
+	}
+
+	for (int i = 0; i < N; i++)
+	{
+		x[i] = gapA[i][i];
+	}
 }
 
 
 void dryginaea::lab9()
 {
+    double *newX = new double[N], l = 0;
+	
+    for (int i = 1; i < N; i++) 
+	{
+		x[i] = 0;
+	}
 
+    x[0] = 1;
+	
+    do
+    {
+        double new_l = 0;
+		
+        for (int i = 0; i < N; i++)
+        {
+            newX[i] = 0;
+
+            for (int j = 0; j < N; j++)
+                newX[i] += A[i][j] * x[j];
+
+            new_l += x[i] * newX[i];
+        }
+
+        if (fabs(new_l - l) < eps) break;
+
+        l = new_l;
+        double n = 0;
+		
+        for (int i = 0; i < N; i++) 
+		{
+			n += newX[i] * newX[i];
+		}
+
+        n = sqrt(n);
+		
+        for (int i = 0; i < N; i++) 
+		{
+			x[i] = newX[i] / n;
+		}
+
+    } while (true);
+
+    x[0] = l;
 }
 
 

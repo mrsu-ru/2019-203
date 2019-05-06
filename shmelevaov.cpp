@@ -77,7 +77,7 @@ void shmelevaov::lab2()
 	{
 		for (int j = i - 1; j >= 0; j--)
 		{
-			double temp = A[j][i];			
+			double temp = A[j][i];
 			A[j][i] -= A[i][i] * temp;
 			b[j] -= b[i] * temp;
 		}
@@ -99,7 +99,7 @@ void shmelevaov::lab3()
 	double alpha[N - 1], beta[N];
     alpha[0] = - A[0][1] / A[0][0];
     beta[0] = b[0] / A[0][0];
-	
+
     for (int i = 1; i < N; i++)
 	{
 		double y = A[i][i] + A[i][i - 1] * alpha[i - 1];
@@ -127,7 +127,7 @@ void shmelevaov::lab4()
 	{
 		prev[i] = 0;
 	}
-	
+
 	double difference;
 	do
 	{
@@ -137,11 +137,11 @@ void shmelevaov::lab4()
 			for (int j = 0; j < N; j++)
 			{
 				sum += A[i][j] * prev[j];
-			}				
-			
-			x[i] = prev[i] - lambda * (sum - b[i]);						
+			}
+
+			x[i] = prev[i] - lambda * (sum - b[i]);
 		}
-		
+
 		difference = 0;
 		for (int i = 0; i < N; i++)
 		{
@@ -150,7 +150,7 @@ void shmelevaov::lab4()
 				difference = fabs(x[i] - prev[i]);
 			}
 		}
-		
+
 		for (int i = 0; i < N; i++)
 		{
 			prev[i] = x[i];
@@ -165,13 +165,13 @@ void shmelevaov::lab4()
  * Метод Якоби или Зейделя
  */
 void shmelevaov::lab5()
-{	
+{
 	double prev[N];
 	for (int i = 0; i < N; i++)
 	{
 		prev[i] = 0;
 	}
-	
+
 	double difference;
 	do
 	{
@@ -182,15 +182,15 @@ void shmelevaov::lab5()
 			{
 				sum += A[i][j] * prev[j];
 			}
-			
+
 			for (int j = i + 1; j < N; j++)
 			{
 				sum += A[i][j] * prev[j];
 			}
-			
-			x[i] = (b[i] - sum) / A[i][i];						
+
+			x[i] = (b[i] - sum) / A[i][i];
 		}
-		
+
 		difference = 0;
 		for (int i = 0; i < N; i++)
 		{
@@ -199,7 +199,7 @@ void shmelevaov::lab5()
 				difference = fabs(x[i] - prev[i]);
 			}
 		}
-		
+
 		for (int i = 0; i < N; i++)
 		{
 			prev[i] = x[i];
@@ -215,7 +215,61 @@ void shmelevaov::lab5()
  */
 void shmelevaov::lab6()
 {
+    double prev[N];
+	for (int i = 0; i < N; i++) 
+	{
+		prev[i] = 0;
+	}
+	
+	double r[N];
+	double difference;
+	do 
+	{
+		for (int i = 0; i < N; i++) 
+		{
+			r[i] = b[i];
 
+			for (int j = 0; j < N; j++) 
+			{
+				r[i] -= (A[i][j] * prev[j]);
+			}
+		}
+
+		double numerator_tau = 0;
+		double denominator_tau = 0;
+		for (int i = 0; i < N; i++) 
+		{
+			double Ar = 0.0;
+
+			for (int j = 0; j < N; j++) 
+			{
+				Ar += (A[i][j] * r[j]);
+			}
+
+			numerator_tau += (Ar * r[i]);
+			denominator_tau += (Ar * Ar);
+		}
+		double tau = numerator_tau / denominator_tau;
+
+		for (int i = 0; i < N; i++) 
+		{
+			x[i] = prev[i] + tau * r[i];
+		}
+
+		difference = 0;
+		for (int i = 0; i < N; i++) 
+		{
+			if (fabs(x[i] - prev[i]) > difference) 
+			{
+				difference = fabs(x[i] - prev[i]);
+			}
+		}
+
+		for (int i = 0; i < N; i++) 
+		{
+			prev[i] = x[i];
+		}
+	} while (difference > eps);
 }
 
 
