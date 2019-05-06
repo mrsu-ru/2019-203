@@ -312,10 +312,46 @@ void kobyzevkv::lab8()
 
 }
 
-
+/*
+* Нахождение максимального по модулю собственного значения матрицы 
+*/
 void kobyzevkv::lab9()
 {
+	double eps = 1e-15;
+	double* y = new double[N];
+	double lambda = 0;
+	x[0] = 1;
 
+	while (true)
+	{
+		double newLambda = 0;
+		for (int i = 0; i < N; i++) {
+			y[i] = 0;
+
+			for (int j = 0; j < N; j++) {
+				y[i] += A[i][j] * x[j];
+			}
+
+			newLambda += y[i] * x[i];
+		}
+
+		if (abs(newLambda - lambda) < eps) break;
+		
+		lambda = newLambda;
+
+		double n = 0;
+		for (int i = 0; i < N; i++) {
+			n += y[i] * y[i];
+		}
+		n = sqrt(n);
+
+		for (int i = 0; i < N; i++) {
+			x[i] = y[i] / n;
+		}
+	}
+	x[0] = lambda;
+
+	delete[] y;
 }
 
 
