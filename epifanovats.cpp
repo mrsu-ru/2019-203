@@ -97,40 +97,35 @@ x[i] = alfa[i] * x[i + 1] + beta[i];
  */
 void epifanovats::lab4()
 {
-	for (int i = 0; i < N; i++) {
-		x[i] = 0.;
-	}
+	double *new_x = new double[N], 
+	tau = 0.001, 
+	eps = 0.0000001;
+    
+	for (int i = 0; i < N; i++)
+        x[i] = 0;
 
-	const double tau = 0.01;
+    do
+    {
+        for (int i = 0; i < N; i++)
+        {
+            double temp = 0;
+            for (int j = 0; j < N; j++)
+                temp += A[i][j] * x[j];
 
-	// Вектор решений на предыдущей итерации
-	double *prev_x = new double[N];
+            new_x[i] = x[i] + tau * (b[i] - temp);
+        }
 
-	double norma = 0.;
-	do {
-		for (int i = 0; i < N; i++) {
-			prev_x[i] = x[i];  //предыдущей вектор
-		}
+        double maxdif = 0;
+        for (int i = 0; i < N; i++)
+        {
+            if (fabs(x[i] - new_x[i]) > maxdif) maxdif = fabs(x[i] - new_x[i]);
+            x[i] = new_x[i];
+        }
 
-		// ищем новый вектор решений на текущей итерации
-		for (int i = 0; i < N; i++) {
-			// Подставим текущее решение
-			double result = b[i];
-			for (int j = 0; j < N; j++) {
-				result -= (A[i][j] * prev_x[j]);
-			}			
-			x[i] += (tau * result); // Приближаем вектор решение к ответу
-		}
+        if (maxdif < eps) break;
+    }while(true);
 
-		norma = 0.;
-		for (int i = 0; i < N; i++) {
-			if (std::abs(prev_x[i] - x[i]) > norma) {
-				norma = std::abs(prev_x[i] - x[i]);
-			}
-		}
-	} while (norma > eps);
-
-	delete[] prev_x;
+    delete[] new_x;
 }
 
 
