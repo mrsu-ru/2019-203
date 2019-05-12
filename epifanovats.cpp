@@ -137,7 +137,7 @@ void epifanovats::lab5()
 {
 
     double *new_x = new double[N], 
-	eps = 0.0000001;
+	eps = 1.e-10;
     bool condition;
     
 	for (int i = 0; i < N; i++)
