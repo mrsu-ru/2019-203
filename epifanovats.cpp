@@ -136,6 +136,33 @@ void epifanovats::lab4()
 void epifanovats::lab5()
 {
 
+    double *new_x = new double[N], 
+	eps = 0.0000001;
+    bool condition;
+    
+	for (int i = 0; i < N; i++)
+        x[i] = 1;
+
+    do
+    {
+        condition = false;
+        for (int i = 0; i < N; i++)
+        {
+            new_x[i] = b[i];
+            for (int j = 0; j < N; j++)
+            {
+                if (i == j) continue;
+                new_x[i] -= A[i][j]*x[j];
+            }
+
+            new_x[i] /= A[i][i];
+            if (!condition) condition = (fabs(new_x[i] - x[i]) > eps);
+            x[i] = new_x[i];
+        }
+
+    }while(condition);
+
+    delete[] new_x;
 }
 
 
