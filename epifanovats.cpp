@@ -72,7 +72,7 @@ x = temp;
  */
 void epifanovats::lab3()
 {
-int n1=n-1;
+int n1=N-1;
 double *alfa = new double[N];
 double *beta = new double[N];
 double y = A[0][0];
@@ -99,7 +99,7 @@ void epifanovats::lab4()
 {
 	double *new_x = new double[N], 
 	tau = 0.001, 
-	eps = 0.0000001;
+	eps = 1.e-10;
     
 	for (int i = 0; i < N; i++)
         x[i] = 0;
