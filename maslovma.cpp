@@ -360,10 +360,42 @@ void maslovma::lab8()
 
 }
 
+/*Степенной метод нахождения 
+максимального по модулю собственного значения
+ и соответствующего ему собственного вектора*/
 
 void maslovma::lab9()
 {
+   double *new_x = new double[N], lam = 0, eps = 1.e-10;
+    for (int i = 1; i < N; i++) x[i] = 0;
 
+    x[0] = 1;
+    do
+    {
+        double new_lam = 0;
+        for (int i = 0; i < N; i++)
+        {
+            new_x[i] = 0;
+
+            for (int j = 0; j < N; j++)
+                new_x[i] += A[i][j] * x[j];
+
+            new_lam += x[i] * new_x[i];
+        }
+
+        if (fabs(new_lam - lam) < eps) break;
+
+        lam = new_lam;
+        double n = 0;
+        for (int i = 0; i < N; i++) n += new_x[i] * new_x[i];
+
+        n = sqrt(n);
+        for (int i = 0; i < N; i++) x[i] = new_x[i] / n;
+
+    } while (true);
+
+    x[0] = lam;
+    delete[] new_x;
 }
 
 
