@@ -3,84 +3,6 @@
 #include <cmath>
 #include <locale>
 
-void Gauss(double **A, double *b, int N, double *x)
-{
-  double /* *x,*/ max;
-  int k, index;
-  const double eps = 0.00001;
-  //x = new double[N]; 
-  double change[N]; int L;
-  k = 0;
-  while (k < N)
-  {
-    max = abs(A[k][k]);
-    index = k;
-    for (int i = k + 1; i < N; i++)
-    {
-      if (abs(A[i][k]) > max)
-      {
-        max = abs(A[i][k]);
-        index = i;
-      }
-    }
-
-    if (max < eps)
-    {
-      cout << "Решение получить невозможно из-за нулевого столбца ";
-      cout << index << " матрицы A" << endl;
-      return;
-    }
-    for (int i = 0; i < N; i++)
-    {
-    change[i]=index;
-    if(index!=i) {
-		swap(A[i],A[index]);
-        swap(b[i],b[index]);
-		}
-
-    for (int j = 0; j < N; j++)
-    {
-      double temp = A[k][j];
-
-      A[k][j] = A[index][j];
-      A[index][j] = temp;
-    }
-    double temp = b[k];
-    b[k] = b[index];
-    b[index] = temp;
-
-    for (int i = k; i < N; i++)
-    {
-      double temp = A[i][k];
-      if (abs(temp) < eps) continue;
-      for (int j = 0; j < N; j++)
-        A[i][j] = A[i][j] / temp;
-      b[i] = b[i] / temp;
-      if (i == k)  continue;
-      for (int j = 0; j < N; j++)
-        A[i][j] = A[i][j] - A[k][j];
-      b[i] = b[i] - b[k];
-    }
-    k++;
-  }
-  for (k = N - 1; k >= 0; k--)
-  {
-    x[k] = b[k];
-    for (int i = 0; i < k; i++)
-      b[i] = b[i] - A[i][k] * x[k];
-  }
-   for (int i = N-1; i >= 0; i--)
-    {
-       if (index!=i)
-	      { L = change[i];
-            swap(A[L], A[i]);
-            swap(b[L], b[i]);
-			}
-	}
-  //return x;
-}
-}
-
 
 /**
  * Введение в дисциплину
@@ -96,8 +18,47 @@ cout<<"Hello, World!"<<endl;
  */
 void medvedevama::lab2()
 {
-  Gauss(A, b, N, x);
-  }
+double temp;
+
+for (int k = 0; k < N; k++) { 
+	int max=k;
+		for(int i=k+1;i<N;i++)
+			if(abs(A[i][k]) > abs(A[max][k]))
+				max=i;
+	for(int i=0;i<N;i++)
+	std::swap(A[k][i],A[max][i]);
+	std::swap(b[k],b[max]);
+
+//Прямой ход
+temp = A[k][k];
+for (int j = 0; j < N; j++)
+	A[k][j] = A[k][j] / temp;
+b[k] =b[k]/temp;
+
+for (int i = k + 1; i < N; i++) {
+	temp = A[i][k];
+	for (int j = 0; j < N; j++) {
+		A[i][j] =A[i][j]- A[k][j] * temp;
+	}
+b[i] =b[i]- b[k] * temp;
+}
+}
+
+//Обратный ход
+for (int k = N - 1; k > 0; k--)
+{
+  for (int i = k - 1; i >= 0; i--)
+    {
+       temp = A[i][k];
+       for (int j = 0; j < N; j++)
+           A[i][j] =A[i][j]- A[k][j] * temp;
+       b[i] =b[i] - b[k] * temp;
+    }
+}
+
+for(int i=0; i<N; i++)
+x[i]=b[i];
+}
 
 
 
@@ -189,7 +150,39 @@ void medvedevama::lab4()
  */
 void medvedevama::lab5()
 {
+//Метод Якоби
+double *oldx = new double[N];
 
+for (int i=0; i<N; i++) {
+    x[i]=0; // первоначальное решение
+    }
+
+double Err=0.0;
+double eps=1e-20;
+int k=0;
+
+do {
+  k++;
+  Err=0.0;
+  for(int i=0; i<N; i++)
+      oldx[i]=x[i]; //предыдущее решение сюда
+  for(int i=0; i<N; i++)
+  {
+    double s=0; //вычисляем s, но не берём диагональные элементы
+    for(int j=0; j<i; j++)
+        s += A[i][j] * oldx[j];
+    for(int j=i+1; j<N; j++)
+        s += A[i][j] * oldx[j];
+     x[i]=(b[i] - s)/A[i][i]; // вычисляется новое решение
+    }
+Err= std::abs(oldx[0]-x[0]);
+for(int i=0; i<N; i++)
+{
+  if(std::abs(oldx[i]-x[i]) > Err)
+     Err = std::abs(oldx[i]-x[i]);//максимальная допустимая разница между предыдущим решением и текущим.
+}
+} while(Err >= eps);
+delete [] oldx;
 }
 
 
