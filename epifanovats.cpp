@@ -99,7 +99,7 @@ void epifanovats::lab4()
 {
 	double *new_x = new double[N], 
 	tau = 0.001, 
-	eps = 0.0000001;
+	eps = 1.e-10;
     
 	for (int i = 0; i < N; i++)
         x[i] = 0;
