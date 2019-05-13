@@ -97,7 +97,35 @@ x[i] = alfa[i] * x[i + 1] + beta[i];
  */
 void epifanovats::lab4()
 {
+	double *new_x = new double[N], 
+	tau = 0.001, 
+	eps = 0.0000001;
+    
+	for (int i = 0; i < N; i++)
+        x[i] = 0;
 
+    do
+    {
+        for (int i = 0; i < N; i++)
+        {
+            double temp = 0;
+            for (int j = 0; j < N; j++)
+                temp += A[i][j] * x[j];
+
+            new_x[i] = x[i] + tau * (b[i] - temp);
+        }
+
+        double maxdif = 0;
+        for (int i = 0; i < N; i++)
+        {
+            if (fabs(x[i] - new_x[i]) > maxdif) maxdif = fabs(x[i] - new_x[i]);
+            x[i] = new_x[i];
+        }
+
+        if (maxdif < eps) break;
+    }while(true);
+
+    delete[] new_x;
 }
 
 
