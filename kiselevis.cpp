@@ -146,8 +146,41 @@ void kiselevis::lab4()
  */
 void kiselevis::lab5()
 {
+	double eps = 1e-20;
+	for (int i = 0; i < N; i++) {
+		x[i] = 0;
+	}
 
+	double *prev_x = new double[N];
+
+	double norma = 0;
+	do {
+		for (int i = 0; i < N; i++) {
+			prev_x[i] = x[i];
+		}
+
+		for (int i = 0; i < N; i++) {
+			double result = b[i];
+			for (int j = 0; j < N; j++) {
+				if (i != j) {
+					result -= (A[i][j] * prev_x[j]);
+				}
+			}
+
+			x[i] = result / A[i][i];
+		}
+
+		norma = 0;
+		for (int i = 0; i < N; i++) {
+			if (abs(prev_x[i] - x[i]) > norma) {
+				norma = abs(prev_x[i] - x[i]);
+			}
+		}
+	} while (norma > eps);
+
+	delete[] prev_x;
 }
+
 
 
 
@@ -156,7 +189,58 @@ void kiselevis::lab5()
  */
 void kiselevis::lab6()
 {
+	double eps = 1e-20;
+	double *px = new double[N];
+	for (int i = 0; i < N; i++) {
+		px[i] = 0;
+	}
+	
+	double *r = new double[N];
 
+	while (true) {
+		for (int i = 0; i < N; i++) {
+			r[i] = b[i];
+
+			for (int j = 0; j < N; j++) {
+				r[i] -= (A[i][j] * px[j]);
+			}
+		}
+		double tau = 0;
+		double tmp = 0;
+		for (int i = 0; i < N; i++) {
+			double Ar = 0;
+
+			for (int j = 0; j < N; j++) {
+				Ar += (A[i][j] * r[j]);
+			}
+			tau += (Ar * r[i]);
+			tmp += (Ar * Ar);
+		}
+		tau /= tmp;
+
+		for (int i = 0; i < N; i++) {
+			x[i] = px[i] + tau * r[i];
+		}
+
+		double error = 0;
+		for (int i = 0; i < N; i++) {
+			if (abs(x[i] - px[i]) > error) {
+				error = abs(x[i] - px[i]);
+			}
+		}
+
+		if (error < eps) {
+			break;
+		}
+
+		for (int i = 0; i < N; i++) {
+			px[i] = x[i];
+		}
+	}
+
+
+	delete[] px;
+	delete[] r;
 }
 
 
