@@ -208,7 +208,74 @@ void malovava::lab6()
  */
 void malovava::lab7()
 {
+double eps = 1e-15;
 
+	double* prevX = new double[N];
+	double* prevR = new double[N];
+	double* r = new double[N];
+	double* z = new double[N];
+	for (int i = 0; i < N; i++) {
+		r[i] = b[i];
+		z[i] = r[i];
+	}
+
+	while (true) {
+
+		for (int i = 0; i < N; i++) {
+			prevR[i] = r[i];
+			prevX[i] = x[i];
+		}
+
+		double alpha = 0, Alp = 0;
+
+		for (int i = 0; i < N; i++) {
+			double Az = 0;
+			for (int j = 0; j < N; j++) {
+				Az += A[i][j] * z[j];
+			}
+			alpha += prevR[i] * prevR[i];
+			Alp += Az * z[i];
+		}
+		alpha /= Alp;
+
+		for (int i = 0; i < N; i++) {
+			x[i] = prevX[i] + alpha * z[i];
+		}
+
+		double maxErr = abs(x[0] - prevX[0]);
+		for (int i = 1; i < N; i++)
+			if (abs(x[i] - prevX[i]) > maxErr)
+				maxErr = abs(x[i] - prevX[i]);
+
+		if (maxErr < eps)
+			break;
+
+		for (int i = 0; i < N; i++) {
+			double Az = 0;
+
+			for (int j = 0; j < N; j++) {
+				Az += A[i][j] * z[j];
+			}
+
+			r[i] = prevR[i] - alpha * Az;
+		}
+
+		double beta = 0, Bet = 0;
+		for (int i = 0; i < N; i++) {
+			beta += r[i] * r[i];
+			Bet += prevR[i] * prevR[i];
+		}
+		beta /= Bet;
+
+		for (int i = 0; i < N; i++) {
+			z[i] = r[i] + beta * z[i];
+		}
+	}
+
+	delete[] prevX;
+	delete[] r;
+	delete[] prevR;
+	delete[] z;
 }
 
 
