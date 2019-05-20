@@ -287,7 +287,75 @@ double Eps = 1e-18;
  */
 void makarovaaa::lab7()
 {
+double Eps = 1e-20;
+	double Del, s, sAbs;//погрешность итерации, скалярный шаг, модуль шага
 
+
+	double *K = new double[N];
+	double *L = new double[N];
+	double *M = new double[N];
+	double *xrez = new double[N];//итерационные решения
+	
+	
+	//задание начального приближения 
+	for (int i = 0; i<N; i++){
+		xrez[i] = 0;
+	}
+	
+	
+	do {
+		//нахождение скалярного произведения матрицы системы и вектора приближенного решения
+		for (int i = 0; i < N; i++) {
+			K[i] = 0;
+			for (int j = 0; j < N; j++)
+				K[i] += A[i][j] * xrez[j];
+		}
+		
+		//нахождение градиента
+		for (int i = 0; i < N; i++) {
+			L[i] = K[i] - b[i];
+		}
+		
+		//скалярное произведение матрицы системы и градиента
+		for (int i = 0; i < N; i++) {
+			K[i] = 0;
+			for (int j = 0; j < N; j++)
+				K[i] += A[i][j] * L[j];
+		}
+		
+		
+		for (int i = 0; i < N; i++) {
+			M[i] = 0;
+			for (int j = 0; j < N; j++) {
+				M[i] += A[i][j] * K[j];
+			}
+		}
+		
+		s = 0;
+		sAbs = 0;
+		
+		//нахождение величины смещения по направлению градиента
+		for (int i = 0; i < N; i++) {
+			s += K[i] * L[i];
+			sAbs += M[i] * K[i];
+		}
+		if (s == sAbs)
+			s = 1;
+		else 
+			s = s / sAbs;
+		// новое приближенное решение
+		for (int i = 0; i < N; i++)
+			x[i] = xrez[i] - s*L[i];
+		
+		//проверка на уменьшение погрешности
+		Del = abs(x[0] - xrez[0]);
+		
+		for (int i = 0; i < N; i++) {
+			if (abs(x[i] - xrez[i])>Del)
+				Del = abs(x[i] - xrez[i]);
+				xrez[i] = x[i];
+		}
+	} while (Eps < Del);
 }
 
 
