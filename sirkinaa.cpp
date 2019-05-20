@@ -5,7 +5,7 @@
  */
 void sirkinaa::lab1()
 {
-
+    cout << "Hello" << endl;
 }
 
 
