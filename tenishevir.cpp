@@ -211,7 +211,70 @@ void tenishevir::lab6()
  */
 void tenishevir::lab7()
 {
+    double *new_x = new double[N], *r = b, *new_r = new double[N], eps = 0.0000001;
+    for (int i = 0; i < N; i++)
+        x[i] = 0;
 
+    double *z = new double[N];
+    for (int i = 0; i < N; i++)
+        z[i] = r[i];
+
+    do
+    {
+        double tau1, tau2, P = 0, Q = 0, t;
+        for (int i = 0; i < N; i++)
+        {
+            t = 0;
+            for (int j = 0; j < N; j++)
+                t += A[i][j] * r[j];
+
+
+            P += r[i] * r[i];
+            Q += t * z[i];
+        }
+
+        tau1 = P / Q;
+        for (int i = 0; i < N; i++)
+            new_x[i] = x[i] + tau1 * z[i];
+
+        for (int i = 0; i < N; i++)
+        {
+            double temp = 0;
+            for (int j = 0; j < N; j++)
+                temp += A[i][j] * z[j];
+
+            new_r[i] = r[i] - tau1 * temp;
+        }
+
+        double maxdif = 0;
+        for (int i = 0; i < N; i++)
+        {
+            if (fabs(x[i] - new_x[i]) > maxdif) maxdif = fabs(x[i] - new_x[i]);
+            x[i] = new_x[i];
+        }
+
+        if (maxdif < eps) break;
+
+        P = 0; Q = 0;
+        for (int i = 0; i < N; i++)
+        {
+            P += new_r[i] * new_r[i];
+            Q += r[i] * r[i];
+        }
+
+        tau2 = P / Q;
+        for (int i = 0; i < N; i++)
+            z[i] = new_r[i] + tau2 * z[i];
+
+        for (int i = 0; i < N; i++)
+            r[i] = new_r[i];
+
+    }while(true);
+
+    delete[] new_x;
+    delete[] new_r;
+    delete[] r;
+    delete[] z;
 }
 
 
