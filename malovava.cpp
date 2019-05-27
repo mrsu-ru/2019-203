@@ -287,7 +287,32 @@ void malovava::lab8()
 
 void malovava::lab9()
 {
+ double eps=pow(10,-10);
+ double lambda=0, newlambda=0, y[N], md;
+    x[0]=1;
+    do{
+        for (int i=0; i<N; i++){
+            y[i]=0;
+            for (int j=0; j<N; j++){
+                y[i]+=A[i][j]*x[j];
+            }
+        }
+        lambda=newlambda;
+        newlambda=0;
+        for (int i=0; i<N; i++){
+            newlambda+=y[i]*x[i];
+        }
+        md=0;
+        for (int i=0; i<N; i++){
+            md+=pow(y[i], 2);
+        }
+        md=sqrt(md);
+        for (int i=0; i<N; i++){
+            x[i]=y[i]/md;
+        }
+    } while (abs(lambda-newlambda)>eps);
 
+    x[0]=newlambda;
 }
 
 
