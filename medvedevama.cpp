@@ -4,7 +4,6 @@
 #include <locale>
 
 
-
 /**
  * Введение в дисциплину
  */
@@ -333,7 +332,6 @@ void medvedevama::lab7()
 	} while (Eps < Del);
 }
 
-
 void medvedevama::lab8()
 {
 
@@ -396,7 +394,6 @@ double static g(double x)
 {
     return x - f(x)/df(x);
 }
- 
 
 
 std::string medvedevama::get_name()
