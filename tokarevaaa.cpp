@@ -221,18 +221,198 @@ void tokarevaaa::lab6()
  */
 void tokarevaaa::lab7()
 {
+	double eps = 1.e-14;
+	double *p_x = new double[N];
+	double *p_r = new double[N];
+	double *r = new double[N];
+	double *z = new double[N];
+    for (int i = 0; i < N; i++) {
+		x[i] = 0.;
+	}
+	for (int i = 0; i < N; i++) {
+		r[i] = b[i];
+		for (int j = 0; j < N; j++) {
+			r[i] -= (A[i][j] * x[j]);
+		}
+		z[i] = r[i];
+	}
+
+	double t = 0.;
+	while (true) {
+		t = 0.;
+		double alph = 0.;
+		for (int i = 0; i < N; i++) {
+			double Az = 0.;
+			for (int j = 0; j < N; j++) {
+				Az += (A[i][j] * z[j]);
+			}
+			alph += (r[i] * r[i]);
+			t += (Az * z[i]);
+		}
+		alph /= t;
+
+		for (int i = 0; i < N; i++) {
+			p_x[i] = x[i];
+		}
+
+		for (int i = 0; i < N; i++) {
+			x[i] += (alph * z[i]);
+		}
+
+		// Находим погрешность
+		double norma = 0.;
+		for (int i = 0; i < N; i++) {
+			if (abs(p_x[i] - x[i]) > norma) {
+				norma = abs(p_x[i] - x[i]);
+			}
+		}
+		if (norma < eps) {
+			break;
+		}
+
+		for (int i = 0; i < N; i++) {
+			p_r[i] = r[i];
+		}
+
+		for (int i = 0; i < N; i++) {
+			double Az = 0.;
+			for (int j = 0; j < N; j++) {
+				Az += (A[i][j] * z[j]);
+			}
+			r[i] -= (alph * Az);
+		}
+
+		t = 0.;
+		double beta = 0.;
+		for (int i = 0; i < N; i++) {
+			beta += (r[i] * r[i]) ;
+			t += (p_r[i] * p_r[i]);
+		}
+		beta /= t;
+
+		for (int i = 0; i < N; i++) {
+			z[i] = r[i] + beta * z[i];
+		}
+	}
+	delete[] p_x;
+ 	delete[] p_r;
+	delete[] r;
+    delete[] z;
 
 }
 
-
+/**
+ * Метод вращения для нахождения собственных значений матрицы
+ */
 void tokarevaaa::lab8()
 {
+	double eps = 1.e-14;
+	double **T = new double*[N];
+	for (int i = 0; i < N; i++) {
+		T[i] = new double[N];
+	}
+
+	while (true) {
+		int im = 0;
+		int jm = 0;
+		double norma = 0.;
+		for (int i = 0; i < N - 1; i++) {
+			for (int j = i + 1; j < N; j++) {
+				norma += (A[i][j] * A[i][j]);
+				if (abs(A[i][j]) > abs(A[im][jm])) {
+					im = i;
+					jm = j;
+				}
+			}
+		}
+
+		if (sqrt(norma) < eps) {
+			break;
+		}
+
+		double f = .5 * atan(2. * A[im][jm] / (A[im][im] - A[jm][jm]));
+		double c = cos(f);
+		double s = sin(f);
+
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
+				T[i][j] = A[i][j];
+			}
+		}
+
+		for (int k = 0; k < N; k++) {
+			T[k][im] = A[k][im] * c + A[k][jm] * s;
+			T[k][jm] = A[k][jm] * c - A[k][im] * s;
+		}
+
+		for (int k = 0; k < N; k++) {
+			A[im][k] = T[im][k] * c + T[jm][k] * s;
+			A[jm][k] = T[jm][k] * c - T[im][k] * s;
+		}
+
+		for (int i = 0; i < N; i++) {
+			if ((i != im) && (i != jm)) {
+				for (int j = 0; j < N; j++) {
+					A[i][j] = T[i][j];
+				}
+			}
+		}
+	}
+
+	for (int i = 0; i < N; i++) {
+		x[i] = A[i][i];
+	}
+
+	for (int i = 0; i < N; i++) {
+		delete[] T[i];
+	}
+    delete[] T;
 
 }
 
-
+/**
+ * Нахождение наибольшего по модулю собственного значения матрицы
+ */
 void tokarevaaa::lab9()
 {
+	double eps = 1.e-14;
+	for (int i = 0; i < N; i++) {
+		x[i] = 0.;
+	}
+	x[0] = 1.;
+
+	double *z = new double[N];
+	double res = 0.;
+
+	while (true) {
+		for (int i = 0; i < N; i++) {
+			z[i] = 0.;
+			for (int j = 0; j < N; j++) {
+				z[i] += (A[i][j] * x[j]);
+			}
+		}
+
+		double num = 0.;
+		double den = 0.;
+		for (int i = 0; i < N; i++) {
+			num += (z[i] * x[i]);
+			den += (x[i] * x[i]);
+		}
+		double t = res;
+		res = num / den;
+
+
+		if (abs(t - res) < eps) {
+			break;
+		}
+
+		double norma = sqrt(den);
+		for (int i = 0; i < N; i++) {
+			x[i] = z[i] / norma;
+		}
+	}
+	cout << res << endl;
+    delete[] z;
 
 }
 
