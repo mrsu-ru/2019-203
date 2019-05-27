@@ -308,7 +308,33 @@ void viktorovichev::lab8()
 
 void viktorovichev::lab9()
 {
+ for (int i=0; i<N; i++)
+                        x[i]=0;
+                                x[0]=1;
+       double *y=new double[N];
+       double eps=1e-15;
+       double prev_l;
+       double l = 0;
+       double sum;
 
+       for(;;){
+            sum = 0;
+            prev_l = l;
+            l = 0;
+            for (int i = 0; i<N; i++){
+                y[i] = 0;
+                for (int k=0; k<N; k++)
+                     y[i] += A[i][k]*x[k];
+                l += y[i]*x[i];
+                sum += y[i]*y[i];
+            }
+           sum = pow(sum,0.5);
+             for (int i=0; i<N; i++)
+                x[i] = y[i]/sum;
+             if(abs(l - prev_l)<eps) break;
+            }
+            x[0] = l;
+       delete[] y;
 }
 
 
