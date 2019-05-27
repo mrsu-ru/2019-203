@@ -146,8 +146,41 @@ void kiselevis::lab4()
  */
 void kiselevis::lab5()
 {
+	double eps = 1e-20;
+	for (int i = 0; i < N; i++) {
+		x[i] = 0;
+	}
 
+	double *prev_x = new double[N];
+
+	double norma = 0;
+	do {
+		for (int i = 0; i < N; i++) {
+			prev_x[i] = x[i];
+		}
+
+		for (int i = 0; i < N; i++) {
+			double result = b[i];
+			for (int j = 0; j < N; j++) {
+				if (i != j) {
+					result -= (A[i][j] * prev_x[j]);
+				}
+			}
+
+			x[i] = result / A[i][i];
+		}
+
+		norma = 0;
+		for (int i = 0; i < N; i++) {
+			if (abs(prev_x[i] - x[i]) > norma) {
+				norma = abs(prev_x[i] - x[i]);
+			}
+		}
+	} while (norma > eps);
+
+	delete[] prev_x;
 }
+
 
 
 
@@ -156,7 +189,58 @@ void kiselevis::lab5()
  */
 void kiselevis::lab6()
 {
+	double eps = 1e-20;
+	double *px = new double[N];
+	for (int i = 0; i < N; i++) {
+		px[i] = 0;
+	}
+	
+	double *r = new double[N];
 
+	while (true) {
+		for (int i = 0; i < N; i++) {
+			r[i] = b[i];
+
+			for (int j = 0; j < N; j++) {
+				r[i] -= (A[i][j] * px[j]);
+			}
+		}
+		double tau = 0;
+		double tmp = 0;
+		for (int i = 0; i < N; i++) {
+			double Ar = 0;
+
+			for (int j = 0; j < N; j++) {
+				Ar += (A[i][j] * r[j]);
+			}
+			tau += (Ar * r[i]);
+			tmp += (Ar * Ar);
+		}
+		tau /= tmp;
+
+		for (int i = 0; i < N; i++) {
+			x[i] = px[i] + tau * r[i];
+		}
+
+		double error = 0;
+		for (int i = 0; i < N; i++) {
+			if (abs(x[i] - px[i]) > error) {
+				error = abs(x[i] - px[i]);
+			}
+		}
+
+		if (error < eps) {
+			break;
+		}
+
+		for (int i = 0; i < N; i++) {
+			px[i] = x[i];
+		}
+	}
+
+
+	delete[] px;
+	delete[] r;
 }
 
 
@@ -166,7 +250,74 @@ void kiselevis::lab6()
  */
 void kiselevis::lab7()
 {
+	double eps = 1e-20;
 
+	double* prevX = new double[N];
+	double* prevR = new double[N];
+	double* r = new double[N];
+	double* z = new double[N];
+	for (int i = 0; i < N; i++) {
+		r[i] = b[i];
+		z[i] = r[i];
+	}
+
+	while (true) {
+
+		for (int i = 0; i < N; i++) {
+			prevR[i] = r[i];
+			prevX[i] = x[i];
+		}
+
+		double alpha = 0, denAlpha = 0;
+
+		for (int i = 0; i < N; i++) {
+			double Az = 0;
+			for (int j = 0; j < N; j++) {
+				Az += A[i][j] * z[j];
+			}
+			alpha += prevR[i] * prevR[i];
+			denAlpha += Az * z[i];
+		}
+		alpha /= denAlpha;
+
+		for (int i = 0; i < N; i++) {
+			x[i] = prevX[i] + alpha * z[i];
+		}
+
+		double maxErr = abs(x[0] - prevX[0]);
+		for (int i = 1; i < N; i++)
+			if (abs(x[i] - prevX[i]) > maxErr)
+				maxErr = abs(x[i] - prevX[i]);
+
+		if (maxErr < eps)
+			break;
+
+		for (int i = 0; i < N; i++) {
+			double Az = 0;
+
+			for (int j = 0; j < N; j++) {
+				Az += A[i][j] * z[j];
+			}
+
+			r[i] = prevR[i] - alpha * Az;
+		}
+
+		double beta = 0, denBeta = 0;
+		for (int i = 0; i < N; i++) {
+			beta += r[i] * r[i];
+			denBeta += prevR[i] * prevR[i];
+		}
+		beta /= denBeta;
+
+		for (int i = 0; i < N; i++) {
+			z[i] = r[i] + beta * z[i];
+		}
+	}
+
+	delete[] prevX;
+	delete[] r;
+	delete[] prevR;
+	delete[] z;
 }
 
 

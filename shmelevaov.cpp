@@ -1,5 +1,5 @@
 ﻿#include "shmelevaov.h"
-const double eps = 1.e-20;
+const double eps = 1.e-17;
 /**
  * Введение в дисциплину
  */
@@ -216,20 +216,20 @@ void shmelevaov::lab5()
 void shmelevaov::lab6()
 {
     double prev[N];
-	for (int i = 0; i < N; i++) 
+	for (int i = 0; i < N; i++)
 	{
 		prev[i] = 0;
 	}
-	
+
 	double r[N];
 	double difference;
-	do 
+	do
 	{
-		for (int i = 0; i < N; i++) 
+		for (int i = 0; i < N; i++)
 		{
 			r[i] = b[i];
 
-			for (int j = 0; j < N; j++) 
+			for (int j = 0; j < N; j++)
 			{
 				r[i] -= (A[i][j] * prev[j]);
 			}
@@ -237,11 +237,11 @@ void shmelevaov::lab6()
 
 		double numerator_tau = 0;
 		double denominator_tau = 0;
-		for (int i = 0; i < N; i++) 
+		for (int i = 0; i < N; i++)
 		{
 			double Ar = 0.0;
 
-			for (int j = 0; j < N; j++) 
+			for (int j = 0; j < N; j++)
 			{
 				Ar += (A[i][j] * r[j]);
 			}
@@ -251,21 +251,21 @@ void shmelevaov::lab6()
 		}
 		double tau = numerator_tau / denominator_tau;
 
-		for (int i = 0; i < N; i++) 
+		for (int i = 0; i < N; i++)
 		{
 			x[i] = prev[i] + tau * r[i];
 		}
 
 		difference = 0;
-		for (int i = 0; i < N; i++) 
+		for (int i = 0; i < N; i++)
 		{
-			if (fabs(x[i] - prev[i]) > difference) 
+			if (fabs(x[i] - prev[i]) > difference)
 			{
 				difference = fabs(x[i] - prev[i]);
 			}
 		}
 
-		for (int i = 0; i < N; i++) 
+		for (int i = 0; i < N; i++)
 		{
 			prev[i] = x[i];
 		}
@@ -279,7 +279,93 @@ void shmelevaov::lab6()
  */
 void shmelevaov::lab7()
 {
+	double prev_x[N];
+	for (int i = 0; i < N; i++)
+	{
+		prev_x[i] = 0;
+	}
 
+	double r[N];
+	double prev_r[N];
+	double p[N];
+
+	for (int i = 0; i < N; i++) 
+	{
+		prev_r[i] = b[i];
+
+		for (int j = 0; j < N; j++) 
+		{
+			prev_r[i] -= (A[i][j] * prev_x[j]);
+		}
+
+		p[i] = prev_r[i];
+	}
+
+	double difference;
+	do 
+	{
+		double alpha = 0;
+		double alpha_denominator = 0;
+		for (int i = 0; i < N; i++) 
+		{
+			double Ap = 0;
+			for (int j = 0; j < N; j++) 
+			{
+				Ap += (A[i][j] * p[j]);
+			}
+
+			alpha += (prev_r[i] * prev_r[i]);
+			alpha_denominator += (Ap * p[i]);
+		}
+		
+		alpha /= alpha_denominator;
+
+		for (int i = 0; i < N; i++) 
+		{
+			x[i] = prev_x[i] + alpha * p[i];
+		}
+
+		difference = 0;
+		for (int i = 0; i < N; i++)
+		{
+			if (fabs(x[i] - prev_x[i]) > difference)
+			{
+				difference = fabs(x[i] - prev_x[i]);
+			}
+		}
+
+		for (int i = 0; i < N; i++) 
+		{
+			double Ap = 0;
+			for (int j = 0; j < N; j++) 
+			{
+				Ap += (A[i][j] * p[j]);
+			}
+
+			r[i] = prev_r[i] - alpha * Ap;
+		}
+
+		double beta = 0;
+		double beta_denominator = 0;
+		for (int i = 0; i < N; i++) 
+		{
+			beta += (r[i] * r[i]);
+			beta_denominator += (prev_r[i] * prev_r[i]);
+		}
+		
+		beta /= beta_denominator;
+
+		for (int i = 0; i < N; i++) 
+		{
+			p[i] = r[i] + beta * p[i];
+		}
+
+		for (int i = 0; i < N; i++) 
+		{
+			prev_x[i] = x[i];
+			prev_r[i] = r[i];
+		}
+	}while (difference > eps);
 }
 
 
