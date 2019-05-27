@@ -375,6 +375,7 @@ void medvedevama::lab9()
 		for (int i = 0; i<N; i++)
 			Y[i] = M[i];
 	} while (abs(maxL - L)>EPS);
+	x[0] = maxL;
 }
 
 double static f(double x)
