@@ -207,7 +207,8 @@ eps = 1.e-10;
         double maxdif = 0;
         for (int i = 0; i < N; i++)
         {
-            if (fabs(x[i] - new_x[i]) > maxdif) maxdif = fabs(x[i] - new_x[i]);
+            if (fabs(x[i] - new_x[i]) > maxdif) 
+				maxdif = fabs(x[i] - new_x[i]);
             x[i] = new_x[i];
         }
 
