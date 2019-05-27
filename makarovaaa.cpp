@@ -367,7 +367,61 @@ void makarovaaa::lab8()
 
 void makarovaaa::lab9()
 {
+double * Y = new double[N];//первый вектор приближения
+	double * M = new double[N];//второй вектор приближения
+	double maxL, L, sum;
+	double EPS = 1e-15;
+	
+	
+	for (int i = 0; i < N; i++)
+		Y[i] = 0;
+	Y[0] = 1;
+	
+	do{
+		sum = 0;
+		 
+		for (int i = 0; i < N; i++)
+			sum += Y[i] * Y[i];
+		
+		L = sqrt(sum);
+		
+		//построение последовательности векторов
+		for (int i = 0; i < N; i++)
+		{
+			M[i] = 0;
+			for (int j = 0; j < N; j++)
+				M[i] += A[i][j] * Y[j] / L;
+		}
+		sum = 0;
+		
+		//сравнение нормы полученного вектора с заданной погрешностью
+		for (int i = 0; i < N; i++)
+			sum += M[i] * M[i];
+		maxL = sqrt(sum);
+		
+		for (int i = 0; i<N; i++)
+			Y[i] = M[i];
+	} while (abs(maxL - L)>EPS);
 
+	//cout << maxL << endl;
+}
+
+double static f(double x)
+{
+    double f=x*x*x-2*x*x-5*x+6;
+	return f;
+}
+//производная этой функции 
+double static df(double x)
+{
+    double df=3*x*x-4*x-5;
+	return df;
+}
+
+//сжимающее отображение 
+double static g(double x)
+{
+    return x - f(x)/df(x);
 }
 
 
