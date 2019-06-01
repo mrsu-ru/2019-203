@@ -211,7 +211,70 @@ void borisovaem::lab6()
  */
 void borisovaem::lab7()
 {
+  double *new_x = new double[N], *r = b, *new_r = new double[N], eps = 0.0000001;
+    for (int i = 0; i < N; i++)
+        x[i] = 0;
 
+    double *z = new double[N];
+    for (int i = 0; i < N; i++)
+        z[i] = r[i];
+
+    do
+    {
+        double tau1, tau2, P = 0, Q = 0, t;
+        for (int i = 0; i < N; i++)
+        {
+            t = 0;
+            for (int j = 0; j < N; j++)
+                t += A[i][j] * r[j];
+
+
+            P += r[i] * r[i];
+            Q += t * z[i];
+        }
+
+        tau1 = P / Q;
+        for (int i = 0; i < N; i++)
+            new_x[i] = x[i] + tau1 * z[i];
+
+        for (int i = 0; i < N; i++)
+        {
+            double temp = 0;
+            for (int j = 0; j < N; j++)
+                temp += A[i][j] * z[j];
+
+            new_r[i] = r[i] - tau1 * temp;
+        }
+
+        double maxdif = 0;
+        for (int i = 0; i < N; i++)
+        {
+            if (fabs(x[i] - new_x[i]) > maxdif) maxdif = fabs(x[i] - new_x[i]);
+            x[i] = new_x[i];
+        }
+
+        if (maxdif < eps) break;
+
+        P = 0; Q = 0;
+        for (int i = 0; i < N; i++)
+        {
+            P += new_r[i] * new_r[i];
+            Q += r[i] * r[i];
+        }
+
+        tau2 = P / Q;
+        for (int i = 0; i < N; i++)
+            z[i] = new_r[i] + tau2 * z[i];
+
+        for (int i = 0; i < N; i++)
+            r[i] = new_r[i];
+
+    }while(true);
+
+    delete[] new_x;
+    delete[] new_r;
+    delete[] r;
+    delete[] z;
 }
 
 
@@ -223,7 +286,41 @@ void borisovaem::lab8()
 
 void borisovaem::lab9()
 {
+  double eps = 1e-15;
+	double* y = new double[N];
+	double lambda = 0;
+	x[0] = 1;
 
+	while (true)
+	{
+		double newLambda = 0;
+		for (int i = 0; i < N; i++) {
+			y[i] = 0;
+
+			for (int j = 0; j < N; j++) {
+				y[i] += A[i][j] * x[j];
+			}
+
+			newLambda += y[i] * x[i];
+		}
+
+		if (abs(newLambda - lambda) < eps) break;
+
+		lambda = newLambda;
+
+		double n = 0;
+		for (int i = 0; i < N; i++) {
+			n += y[i] * y[i];
+		}
+		n = sqrt(n);
+
+		for (int i = 0; i < N; i++) {
+			x[i] = y[i] / n;
+		}
+	}
+	x[0] = lambda;
+
+	delete[] y;
 }
 
 
