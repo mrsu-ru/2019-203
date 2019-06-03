@@ -351,7 +351,7 @@ double **H = new double*[N], eps = 1.e-10;
     for (int i = 0; i < N; i++) delete[] H[i];
     delete[] H;
 }
-
+/*
 void maslovma::lab9()
 {
    double *new_x = new double[N], lam = 0, eps = 1.e-10;
@@ -385,7 +385,7 @@ void maslovma::lab9()
     x[0] = lam;
     delete[] new_x;
 }
-
+*/
 
 void viktorovichev::lab9()
 {
