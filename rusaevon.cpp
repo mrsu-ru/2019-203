@@ -360,7 +360,30 @@ double **H = new double*[N], eps = 1.e-10;
 
 void rusaevon::lab9()
 {
-
+double eps=pow(10,-10), lambda=0, newlambda=0, y[N], mody;
+    x[0]=1;
+    do{
+        for (int i=0; i<N; i++){
+            y[i]=0;
+            for (int j=0; j<N; j++){
+                y[i]+=A[i][j]*x[j];
+            }
+        }
+        lambda=newlambda;
+        newlambda=0;
+        for (int i=0; i<N; i++){
+            newlambda+=y[i]*x[i];
+        }
+        mody=0;
+        for (int i=0; i<N; i++){
+            mody+=pow(y[i], 2);
+        }
+        mody=sqrt(mody);
+        for (int i=0; i<N; i++){
+            x[i]=y[i]/mody;
+        }
+    }while (abs(lambda-newlambda)>eps);
+    x[0]=newlambda;
 }
 
 
