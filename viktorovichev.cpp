@@ -302,9 +302,90 @@ for (int i=0; i<N; i++)
 
 void viktorovichev::lab8()
 {
+double **H = new double*[N], eps = 1.e-10;
+    for (int i = 0; i < N; i++) H[i] = new double[N];
 
+    do
+    {
+        double n = 0;
+        int i_max = 0, j_max = 1;
+        for (int i = 0; i < N; i++)
+            for (int j = i + 1; j < N; j++)
+            {
+                if (fabs(A[i][j]) > fabs(A[i_max][j_max]))
+                {
+                    i_max = i;
+                    j_max = j;
+                }
+
+                n += A[i][j] * A[i][j];
+            }
+
+        if (sqrt(n) < eps) break;
+
+        double fi = 0.5 * atan(2 * A[i_max][j_max] / (A[i_max][i_max] - A[j_max][j_max]));
+        for (int i = 0; i < N; i++)
+        {
+            H[i][i_max] = A[i][i_max] * cos(fi) + A[i][j_max] * sin(fi);
+            H[i][j_max] = A[i][j_max] * cos(fi) - A[i][i_max] * sin(fi);
+        }
+
+        for (int i = 0; i < N; i++)
+            for (int j = 0; j < N; j++)
+                if (j != i_max && j != j_max) H[i][j] = A[i][j];
+
+        for (int j = 0; j < N; j++)
+        {
+            A[i_max][j] = H[i_max][j] * cos(fi) + H[j_max][j] * sin(fi);
+            A[j_max][j] = H[j_max][j] * cos(fi) - H[i_max][j] * sin(fi);
+        }
+
+        for (int i = 0; i < N; i++)
+            for (int j = 0; j < N; j++)
+                if (i != i_max && i != j_max) A[i][j] = H[i][j];
+
+    }while(true);
+
+    for (int i = 0; i < N; i++) x[i] = A[i][i];
+
+    for (int i = 0; i < N; i++) delete[] H[i];
+    delete[] H;
 }
+/*
+void maslovma::lab9()
+{
+   double *new_x = new double[N], lam = 0, eps = 1.e-10;
+    for (int i = 1; i < N; i++) x[i] = 0;
 
+    x[0] = 1;
+    do
+    {
+        double new_lam = 0;
+        for (int i = 0; i < N; i++)
+        {
+            new_x[i] = 0;
+
+            for (int j = 0; j < N; j++)
+                new_x[i] += A[i][j] * x[j];
+
+            new_lam += x[i] * new_x[i];
+        }
+
+        if (fabs(new_lam - lam) < eps) break;
+
+        lam = new_lam;
+        double n = 0;
+        for (int i = 0; i < N; i++) n += new_x[i] * new_x[i];
+
+        n = sqrt(n);
+        for (int i = 0; i < N; i++) x[i] = new_x[i] / n;
+
+    } while (true);
+
+    x[0] = lam;
+    delete[] new_x;
+}
+*/
 
 void viktorovichev::lab9()
 {
