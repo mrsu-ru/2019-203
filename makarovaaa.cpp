@@ -403,26 +403,9 @@ double * Y = new double[N];//первый вектор приближения
 			Y[i] = M[i];
 	} while (abs(maxL - L)>EPS);
 
-	//cout << maxL << endl;
+	cout << maxL << endl;
 }
 
-double static f(double x)
-{
-    double f=x*x*x-2*x*x-5*x+6;
-	return f;
-}
-//производная этой функции 
-double static df(double x)
-{
-    double df=3*x*x-4*x-5;
-	return df;
-}
-
-//сжимающее отображение 
-double static g(double x)
-{
-    return x - f(x)/df(x);
-}
 
 
 std::string makarovaaa::get_name()
