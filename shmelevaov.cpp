@@ -456,10 +456,9 @@ void shmelevaov::lab9()
             y[i] = 0;
             for (int j = 0; j < N; j++)
                 y[i] += A[i][j] * x[j];
-
-            new_lambda += x[i] * y[i];
         }
-
+		
+		new_lambda = y[0] / x[0];
         if (fabs(new_lambda - lambda) < eps) 
 		{
 			break;
