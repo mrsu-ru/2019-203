@@ -306,7 +306,7 @@ void epifanovats::lab8()
 		T[i] = new double[N];
 	}
 
-}
+//}
 	while (true) {  //вычисляем норму и находим наибольший не диагональный элемент
 		int im = 0;
 		int jm = 0;
