@@ -441,7 +441,45 @@ void shmelevaov::lab8()
 
 void shmelevaov::lab9()
 {
+    double y[N], lambda = 0;
+    for (int i = 1; i < N; i++) 
+	{
+		x[i] = 0;
+	}
 
+    x[0] = 1;
+    while (true)
+    {
+        double new_lambda = 0;
+        for (int i = 0; i < N; i++)
+        {
+            y[i] = 0;
+            for (int j = 0; j < N; j++)
+                y[i] += A[i][j] * x[j];
+
+            new_lambda += x[i] * y[i];
+        }
+
+        if (fabs(new_lambda - lambda) < eps) 
+		{
+			break;
+		}
+
+        lambda = new_lambda;
+        double norma = 0;
+        for (int i = 0; i < N; i++) 
+		{
+			norma += y[i] * y[i];
+		}
+
+        norma = sqrt(norma);
+        for (int i = 0; i < N; i++) 
+		{
+			x[i] = y[i] / norma;
+		}
+    };
+
+    cout << "answer : " << lambda;
 }
 
 
