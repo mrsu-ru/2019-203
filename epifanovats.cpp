@@ -207,7 +207,8 @@ eps = 1.e-10;
         double maxdif = 0;
         for (int i = 0; i < N; i++)
         {
-            if (fabs(x[i] - new_x[i]) > maxdif) maxdif = fabs(x[i] - new_x[i]);
+            if (fabs(x[i] - new_x[i]) > maxdif) 
+				maxdif = fabs(x[i] - new_x[i]);
             x[i] = new_x[i];
         }
 
@@ -225,19 +226,185 @@ eps = 1.e-10;
  */
 void epifanovats::lab7()
 {
+	double Del, s, sAbs;
+    double eps = 1.e-10;
 
+	double *K = new double[N];
+	double *L = new double[N];
+	double *M = new double[N];
+	double *xrez = new double[N];//итерационные решения
+	
+	
+	//задание начального приближения 
+	for (int i = 0; i<N; i++){
+		xrez[i] = 0;
+	}
+	
+	
+	do {
+		//нахождение скалярного произведения матрицы системы и вектора приближенного решения
+		for (int i = 0; i < N; i++) {
+			K[i] = 0;
+			for (int j = 0; j < N; j++)
+				K[i] += A[i][j] * xrez[j];
+		}
+		
+		//нахождение градиента
+		for (int i = 0; i < N; i++) {
+			L[i] = K[i] - b[i];
+		}
+		
+		//скалярное произведение матрицы системы и градиента
+		for (int i = 0; i < N; i++) {
+			K[i] = 0;
+			for (int j = 0; j < N; j++)
+				K[i] += A[i][j] * L[j];
+		}
+		
+		
+		for (int i = 0; i < N; i++) {
+			M[i] = 0;
+			for (int j = 0; j < N; j++) {
+				M[i] += A[i][j] * K[j];
+			}
+		}
+		
+		s = 0;
+		sAbs = 0;
+		
+		//нахождение величины смещения по направлению градиента(скалярного шага)
+		for (int i = 0; i < N; i++) {
+			s += K[i] * L[i];
+			sAbs += M[i] * K[i];
+		}
+		if (s == sAbs)
+			s = 1;
+		else 
+			s = s / sAbs;
+		//записываем новое приближенное решение
+		for (int i = 0; i < N; i++)
+			x[i] = xrez[i] - s*L[i];
+		
+		//проверка на уменьшение погрешности
+		Del = abs(x[0] - xrez[0]);
+		
+		for (int i = 0; i < N; i++) {
+			if (abs(x[i] - xrez[i])>Del)
+				Del = abs(x[i] - xrez[i]);
+				xrez[i] = x[i];
+		}
+	} while (eps < Del);
 }
 
 
 void epifanovats::lab8()
 {
+    double eps = 1.e-10;
+
+	double **T = new double*[N];//промежуточная матрица
+	for (int i = 0; i < N; i++) {
+		T[i] = new double[N];
+	}
+
+//}
+	while (true) {  //вычисляем норму и находим наибольший не диагональный элемент
+		int im = 0;
+		int jm = 0;
+		double norma = 0.;
+		for (int i = 0; i < N - 1; i++) {
+			for (int j = i + 1; j < N; j++) {
+				norma += (A[i][j] * A[i][j]);
+				if (abs(A[i][j]) > abs(A[im][jm])) {
+					im = i;
+					jm = j;
+				}
+			}
+		}
+
+		if (sqrt(norma) < eps) { //след-но матрица диагональная 
+			break;
+		}
+         //значения переменных матрицы вращения
+		double f = .5 * atan(2. * A[im][jm] / (A[im][im] - A[jm][jm]));
+		double c = cos(f);
+		double s = sin(f);
+
+		for (int i = 0; i < N; i++) {  
+			for (int j = 0; j < N; j++) {
+				T[i][j] = A[i][j];
+			}
+		}
+
+		for (int k = 0; k < N; k++) {  //новое приближение 
+			T[k][im] = A[k][im] * c + A[k][jm] * s;
+			T[k][jm] = A[k][jm] * c - A[k][im] * s;
+		}
+
+		for (int k = 0; k < N; k++) {
+			A[im][k] = T[im][k] * c + T[jm][k] * s;
+			A[jm][k] = T[jm][k] * c - T[im][k] * s;
+		}
+
+		for (int i = 0; i < N; i++) {
+			if ((i != im) && (i != jm)) {
+				for (int j = 0; j < N; j++) {
+					A[i][j] = T[i][j];
+				}
+			}
+		}
+	}
+	
+   // Запиываем в вектор решений вектор собственных значений матрицы
+	for (int i = 0; i < N; i++) {
+		x[i] = A[i][i];
+	}
+
+	for (int i = 0; i < N; i++) {
+		delete[] T[i];
+	}
+    delete[] T;
 
 }
 
 
 void epifanovats::lab9()
 {
-
+double * Y = new double[N];//первый вектор приближения
+	double * M = new double[N];//второй вектор приближения
+	double maxL, L, sum;
+	double EPS = 1e-15;
+	
+	//первичное приближение начального вектора
+	for (int i = 0; i < N; i++)
+		Y[i] = 0;
+	Y[0] = 1;
+	
+	do{
+		sum = 0;
+		//нахождение скалярного произведения векторов приближения 
+		for (int i = 0; i < N; i++)
+			sum += Y[i] * Y[i];
+		
+		L = sqrt(sum);//норма вектора приближения
+		
+		//построение последовательности векторов
+		for (int i = 0; i < N; i++)
+		{
+			M[i] = 0;
+			for (int j = 0; j < N; j++)
+				M[i] += A[i][j] * Y[j] / L;
+		}
+		sum = 0;
+		
+		//сравнение нормы полученного вектора с заданной погрешностью
+		for (int i = 0; i < N; i++)
+			sum += M[i] * M[i];
+		maxL = sqrt(sum);
+		
+		for (int i = 0; i<N; i++)
+			Y[i] = M[i];
+	} while (abs(maxL - L)>EPS);
+	x[0]=maxL;
 }
 
 

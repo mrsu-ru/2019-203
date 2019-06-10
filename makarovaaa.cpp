@@ -66,8 +66,9 @@ double * gauss(double **A, double *b, int N)
    for (int i = N-1; i >= 0; i--) { if (index!=i) {L = change[i];
                                               swap(A[L], A[i]);
                                               swap(b[L], b[i]); } }
-  return x;
+
 }
+  return x;
 }
 
 /**
@@ -361,14 +362,98 @@ double Eps = 1e-20;
 
 void makarovaaa::lab8()
 {
-
+double **H = new double*[N], eps = 1.e-10;
+	    for (int i = 0; i < N; i++) H[i] = new double[N];
+	
+	    do
+	    {
+	        double n = 0;
+	        int i_max = 0, j_max = 1;
+	        for (int i = 0; i < N; i++)
+	            for (int j = i + 1; j < N; j++)
+	            {
+	                if (fabs(A[i][j]) > fabs(A[i_max][j_max]))
+	                {
+	                    i_max = i;
+	                    j_max = j;
+	                }
+	
+	                n += A[i][j] * A[i][j];
+	            }
+	
+	        if (sqrt(n) < eps) break;
+	
+	        double fi = 0.5 * atan(2 * A[i_max][j_max] / (A[i_max][i_max] - A[j_max][j_max]));
+	        for (int i = 0; i < N; i++)
+	        {
+	            H[i][i_max] = A[i][i_max] * cos(fi) + A[i][j_max] * sin(fi);
+	            H[i][j_max] = A[i][j_max] * cos(fi) - A[i][i_max] * sin(fi);
+	        }
+	
+	        for (int i = 0; i < N; i++)
+	            for (int j = 0; j < N; j++)
+	                if (j != i_max && j != j_max) H[i][j] = A[i][j];
+	
+	        for (int j = 0; j < N; j++)
+	        {
+	            A[i_max][j] = H[i_max][j] * cos(fi) + H[j_max][j] * sin(fi);
+	            A[j_max][j] = H[j_max][j] * cos(fi) - H[i_max][j] * sin(fi);
+	        }
+	
+	        for (int i = 0; i < N; i++)
+	            for (int j = 0; j < N; j++)
+	                if (i != i_max && i != j_max) A[i][j] = H[i][j];
+	
+	    }while(true);
+	
+	    for (int i = 0; i < N; i++) x[i] = A[i][i];
+	
+	    for (int i = 0; i < N; i++) delete[] H[i];
+	    delete[] H;
 }
 
 
 void makarovaaa::lab9()
 {
+double * Y = new double[N];//первый вектор приближения
+	double * M = new double[N];//второй вектор приближения
+	double maxL, L, sum;
+	double EPS = 1e-15;
+	
+	
+	for (int i = 0; i < N; i++)
+		Y[i] = 0;
+	Y[0] = 1;
+	
+	do{
+		sum = 0;
+		 
+		for (int i = 0; i < N; i++)
+			sum += Y[i] * Y[i];
+		
+		L = sqrt(sum);
+		
+		//построение последовательности векторов
+		for (int i = 0; i < N; i++)
+		{
+			M[i] = 0;
+			for (int j = 0; j < N; j++)
+				M[i] += A[i][j] * Y[j] / L;
+		}
+		sum = 0;
+		
+		//сравнение нормы полученного вектора с заданной погрешностью
+		for (int i = 0; i < N; i++)
+			sum += M[i] * M[i];
+		maxL = sqrt(sum);
+		
+		for (int i = 0; i<N; i++)
+			Y[i] = M[i];
+	} while (abs(maxL - L)>EPS);
 
+	cout << maxL << endl;
 }
+
 
 
 std::string makarovaaa::get_name()
