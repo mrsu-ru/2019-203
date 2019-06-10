@@ -19,6 +19,7 @@ double p;
 
     for (int k=0; k<N-1; k++)
     {
+
         maxn = k;
         for (int i=k+1; i<N; i++)
             if(abs(A[i][k]) > abs(A[maxn][k])) maxn = i;
@@ -221,24 +222,178 @@ double Eps = 1e-18;
 
 
 
-/**
+/*
  * Метод сопряженных градиентов
  */
 void eremkinnv::lab7()
 {
+double eps = 1e-15;
 
+	double* prevX = new double[N];
+	double* prevR = new double[N];
+	double* r = new double[N];
+	double* z = new double[N];
+	for (int i = 0; i < N; i++) {
+		r[i] = b[i];
+		z[i] = r[i];
+	}
+
+	while (true) {
+
+		for (int i = 0; i < N; i++) {
+			prevR[i] = r[i];
+			prevX[i] = x[i];
+		}
+
+		double alpha = 0, denAlpha = 0;
+
+		for (int i = 0; i < N; i++) {
+			double Az = 0;
+			for (int j = 0; j < N; j++) {
+				Az += A[i][j] * z[j];
+			}
+			alpha += prevR[i] * prevR[i];
+			denAlpha += Az * z[i];
+		}
+		alpha /= denAlpha;
+
+		for (int i = 0; i < N; i++) {
+			x[i] = prevX[i] + alpha * z[i];
+		}
+
+		double maxErr = abs(x[0] - prevX[0]);
+		for (int i = 1; i < N; i++)
+			if (abs(x[i] - prevX[i]) > maxErr)
+				maxErr = abs(x[i] - prevX[i]);
+
+		if (maxErr < eps)
+			break;
+
+		for (int i = 0; i < N; i++) {
+			double Az = 0;
+
+			for (int j = 0; j < N; j++) {
+				Az += A[i][j] * z[j];
+			}
+
+			r[i] = prevR[i] - alpha * Az;
+		}
+
+		double beta = 0, denBeta = 0;
+		for (int i = 0; i < N; i++) {
+			beta += r[i] * r[i];
+			denBeta += prevR[i] * prevR[i];
+		}
+		beta /= denBeta;
+
+		for (int i = 0; i < N; i++) {
+			z[i] = r[i] + beta * z[i];
+		}
+	}
+
+	delete[] prevX;
+	delete[] r;
+	delete[] prevR;
+	delete[] z;
 }
 
 
+/*
+* Метод вращения для нахождения собственных значений матрицы
+*/
 void eremkinnv::lab8()
 {
+double **H = new double*[N], eps = 1.e-10;
+	for (int i = 0; i < N; i++) H[i] = new double[N];
 
+	do
+	{
+		double n = 0;
+		int i_max = 0, j_max = 1;
+		for (int i = 0; i < N; i++)
+			for (int j = i + 1; j < N; j++)
+			{
+				if (fabs(A[i][j]) > fabs(A[i_max][j_max]))
+				{
+					i_max = i;
+					j_max = j;
+				}
+
+				n += A[i][j] * A[i][j];
+			}
+
+		if (sqrt(n) < eps) break;
+
+		double fi = 0.5 * atan(2 * A[i_max][j_max] / (A[i_max][i_max] - A[j_max][j_max]));
+		for (int i = 0; i < N; i++)
+		{
+			H[i][i_max] = A[i][i_max] * cos(fi) + A[i][j_max] * sin(fi);
+			H[i][j_max] = A[i][j_max] * cos(fi) - A[i][i_max] * sin(fi);
+		}
+
+		for (int i = 0; i < N; i++)
+			for (int j = 0; j < N; j++)
+				if (j != i_max && j != j_max) H[i][j] = A[i][j];
+
+		for (int j = 0; j < N; j++)
+		{
+			A[i_max][j] = H[i_max][j] * cos(fi) + H[j_max][j] * sin(fi);
+			A[j_max][j] = H[j_max][j] * cos(fi) - H[i_max][j] * sin(fi);
+		}
+
+		for (int i = 0; i < N; i++)
+			for (int j = 0; j < N; j++)
+				if (i != i_max && i != j_max) A[i][j] = H[i][j];
+
+	} while (true);
+
+	for (int i = 0; i < N; i++) x[i] = A[i][i];
+
+	for (int i = 0; i < N; i++) delete[] H[i];
+	delete[] H;
 }
 
 
+/*
+* Нахождение максимального по модулю собственного значения матрицы
+*/
 void eremkinnv::lab9()
 {
+double eps = 1e-15;
+	double* y = new double[N];
+	double lambda = 0;
+	x[0] = 1;
 
+	while (true)
+	{
+		double newLambda = 0;
+		for (int i = 0; i < N; i++) {
+			y[i] = 0;
+
+			for (int j = 0; j < N; j++) {
+				y[i] += A[i][j] * x[j];
+			}
+
+			newLambda += y[i] * x[i];
+		}
+
+		if (abs(newLambda - lambda) < eps) break;
+
+		lambda = newLambda;
+
+		double n = 0;
+		for (int i = 0; i < N; i++) {
+			n += y[i] * y[i];
+		}
+		n = sqrt(n);
+
+		for (int i = 0; i < N; i++) {
+			x[i] = y[i] / n;
+		}
+	}
+	x[0] = lambda;
+
+	delete[] y;
 }
 
 
