@@ -6,7 +6,7 @@
 void alekseev::lab1()
 {
 	cout << "It's done" << endl;
-	system("pause");
+	//system("pause");
 }
 
 
@@ -94,7 +94,7 @@ void alekseev::lab3()
 /**
  * Метод простых итераций
  */
-void igaykiniv::lab4()
+void alekseev::lab4()
 {
 	double *new_x = new double[N], tau = 0.001, eps = 0.0000001;
 	for (int i = 0; i < N; i++)
